@@ -43,22 +43,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\Example_01\CExample_01.cs" />
-    <Compile Include="Classes\Example_02\CExample_02.cs" />
-    <Compile Include="Classes\Example_03\CExample_03.cs" />
-    <Compile Include="Classes\Example_04\CExample_04.cs" />
-    <Compile Include="Classes\Example_05\CExample_05.cs" />
-    <Compile Include="Classes\Example_06\CExample_06.cs" />
-    <Compile Include="Classes\Example_07\CExample_07.cs" />
-    <Compile Include="Classes\Example_08\CExample_08.cs" />
-    <Compile Include="Classes\Example_09\CExample_09.cs" />
-    <Compile Include="Classes\Example_10\CExample_10.cs" />
-    <Compile Include="Classes\Example_11\CExample_11.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Classes\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
