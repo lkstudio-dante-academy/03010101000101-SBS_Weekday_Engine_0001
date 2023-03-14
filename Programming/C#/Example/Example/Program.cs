@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Example {
 	class Program {
-		/** 메인 메서드 */
 		static void Main(string[] args) {
+			Classes.Example_01.CExample_01.Start(args);
+
 			Console.ReadKey();
 		}
 	}
