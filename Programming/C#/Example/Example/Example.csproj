@@ -43,7 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\Example_01\CExample_01.cs" />
+    <Compile Include="Classes\Example_01 %28클래스%29\CExample_01.cs" />
+    <Compile Include="Classes\Example_02 %28제네릭%29\CExample_02.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
