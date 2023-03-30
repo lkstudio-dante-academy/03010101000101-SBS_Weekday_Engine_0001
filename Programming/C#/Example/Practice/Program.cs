@@ -4,13 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Example {
+namespace Practice {
 	class Program {
+		/** 메인 메서드 */
 		static void Main(string[] args) {
-			//Classes.Example_01.CExample_01.Start(args);
-			//Classes.Example_02.CExample_02.Start(args);
-			Classes.Example_03.CExample_03.Start(args);
-
+			Classes.Practice_01.CPractice_01.Start(args);
 			Console.ReadKey();
 		}
 	}
