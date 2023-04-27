@@ -15,5 +15,6 @@ public static partial class KDefine {
 
 	// 씬 이름
 	public const string G_SCENE_N_E01 = "Example_01 (Unity 기초)";
+	public const string G_SCENE_N_E02 = "Example_02 (프리팹, 물리 엔진)";
 	#endregion // 기본
 }
