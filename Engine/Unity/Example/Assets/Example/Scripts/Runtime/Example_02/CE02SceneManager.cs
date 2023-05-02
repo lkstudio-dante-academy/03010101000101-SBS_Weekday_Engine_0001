@@ -1,6 +1,7 @@
 //#define E02_PREFAB
 #define E02_PHYSICS
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +16,7 @@ using UnityEngine;
  * 때문에 만약 프리팹 또는 사본 객체에 변화가 발생 할 경우 해당 사항을 원본 프리팹과 동기화
  * 시킴으로서 다른 사본 객체도 해당 변화를 손쉽게 적용하는 것이 가능하다.
  * 
- * 유니티 구동 중에 게임 객체 생성 방법
+ * 구동 중에 게임 객체 생성 방법
  * - new 키워드 사용
  * - Instantiate 메서드 사용
  * 
@@ -38,8 +39,14 @@ using UnityEngine;
 /** Example 2 */
 public class CE02SceneManager : CSceneManager {
 	#region 변수
+	[Header("=====> 프리팹 <=====")]
 	[SerializeField] private GameObject m_oTargetRoot = null;
 	[SerializeField] private GameObject m_oOriginTarget = null;
+
+	[Header("=====> 물리 엔진 <=====")]
+	[SerializeField] private GameObject m_oPlayer = null;
+	[SerializeField] private GameObject m_oBulletRoot = null;
+	[SerializeField] private GameObject m_oOriginBullet = null;
 	#endregion // 변수
 
 	#region 프로퍼티
@@ -64,8 +71,53 @@ public class CE02SceneManager : CSceneManager {
 				new Vector3(100.0f, 100.0f, 100.0f), Vector3.zero);
 		}
 #elif E02_PHYSICS
+		/** 이동 키를 눌렀을 경우 */
+		if(Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow)) {
+			float fSpeed = Input.GetKey(KeyCode.UpArrow) ? 1000.0f : -1000.0f;
+			m_oPlayer.transform.Translate(new Vector3(0.0f, 0.0f, fSpeed * Time.deltaTime), Space.Self);
+		}
 
+		/** 회전 키를 눌렀을 경우 */
+		if(Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow)) {
+			float fAngle = Input.GetKey(KeyCode.LeftArrow) ? -180.0f : 180.0f;
+			m_oPlayer.transform.Rotate(new Vector3(0.0f, fAngle * Time.deltaTime, 0.0f), Space.World);
+		}
+
+		/** 발사 키를 눌렀을 경우 */
+		if(Input.GetKeyDown(KeyCode.Space)) {
+			var stPos = m_oPlayer.transform.position;
+			var stRotate = m_oPlayer.transform.eulerAngles;
+
+			var oRigidbody = CFactory.CreateCloneGameObj<Rigidbody>("Bullet",
+				m_oOriginBullet, m_oBulletRoot, stPos.ExToLocal(m_oBulletRoot), Vector3.one,
+				stRotate.ExToLocal(m_oBulletRoot, false));
+
+			var oParent = m_oPlayer.transform.parent.gameObject;
+
+			oRigidbody.AddForce(m_oPlayer.transform.forward.ExToWorld(oParent, false) * 1500.0f, 
+				ForceMode.VelocityChange);
+
+			var oDispatcher = oRigidbody.GetComponent<CCollisionDispatcher>();
+			oDispatcher.EnterCallback = this.HandleOnCollisionEnter;
+			oDispatcher.StayCallback = this.HandleOnCollisionStay;
+			oDispatcher.ExitCallback = this.HandleOnCollisionExit;
+		}
 #endif // #if E02_PREFAB
+	}
+
+	/** 충돌 시작을 처리한다 */
+	private void HandleOnCollisionEnter(CCollisionDispatcher a_oSender, Collision a_oCollision) {
+		// Do Something
+	}
+
+	/** 충돌 진행을 처리한다 */
+	private void HandleOnCollisionStay(CCollisionDispatcher a_oSender, Collision a_oCollision) {
+		// Do Something
+	}
+
+	/** 충돌 종료를 처리한다 */
+	private void HandleOnCollisionExit(CCollisionDispatcher a_oSender, Collision a_oCollision) {
+		// Do Something
 	}
 	#endregion // 함수
 }
