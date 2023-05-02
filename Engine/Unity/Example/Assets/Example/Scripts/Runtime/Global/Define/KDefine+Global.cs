@@ -16,5 +16,8 @@ public static partial class KDefine {
 	// 씬 이름
 	public const string G_SCENE_N_E01 = "Example_01 (Unity 기초)";
 	public const string G_SCENE_N_E02 = "Example_02 (프리팹, 물리 엔진)";
+	public const string G_SCENE_N_E03 = "Example_03 (플래피 버드 - 시작)";
+	public const string G_SCENE_N_E04 = "Example_04 (플래피 버드 - 플레이)";
+	public const string G_SCENE_N_E05 = "Example_05 (플래피 버드 - 결과)";
 	#endregion // 기본
 }

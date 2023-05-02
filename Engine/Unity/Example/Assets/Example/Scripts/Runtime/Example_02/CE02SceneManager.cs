@@ -71,6 +71,29 @@ public class CE02SceneManager : CSceneManager {
 				new Vector3(100.0f, 100.0f, 100.0f), Vector3.zero);
 		}
 #elif E02_PHYSICS
+		var stPlayerPos = m_oPlayer.transform.position;
+		var stDirection = m_oPlayer.transform.forward.ExToWorld(m_oPlayer.transform.parent.gameObject);
+
+		/*
+		 * Physics.Raycast 계열 메서드를 활용하면 간단하게 광선 추적 연산을 사용하는 것이
+		 * 가능합니다. (즉, 해당 메서드의 결과를 통해서 특정 사물 전방에 물체가 존재하는지
+		 * 여부를 판단하는 구문을 손쉽게 작성하는 것이 가능하다.)
+		 * 
+		 * 또한, 유니티는 Boxcast 와 같은 특정 모양으로 광선 추적 연산을 수행 할 수 있기
+		 * 때문에 해당 메서드를 활용해서 다양한 충돌 예측 시뮬레이션을 작성하는 것이 가능하다.
+		 * 
+		 * RaycastHit 는 광선 추적을 통해서 충돌 된 사물의 정보를 보관하고 있는 구조체를 의미한다.
+		 * (즉, 해당 정보를 활용하면 광선을 통해 충돌이 발생한 사물을 구별해서 그에 맞는 처리 구문을
+		 * 작성하는 것이 가능하다.)
+		 * 
+		 * 만약, 특정 대상을 Raycast 계열 메서드의 후보에서 제외 시키고 싶다면 해당 대상의 레이어를
+		 * IgnoreRaycast 를 설정하면 된다.
+		 */
+		// 플레이어 전방에 사물이 존재 할 경우
+		if(Physics.Raycast(stPlayerPos, stDirection, out RaycastHit stRaycastHit)) {
+			Debug.LogFormat("{0} 가 전방에 존재합니다.", stRaycastHit.collider.name);
+		}
+
 		/** 이동 키를 눌렀을 경우 */
 		if(Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow)) {
 			float fSpeed = Input.GetKey(KeyCode.UpArrow) ? 1000.0f : -1000.0f;
@@ -107,17 +130,88 @@ public class CE02SceneManager : CSceneManager {
 
 	/** 충돌 시작을 처리한다 */
 	private void HandleOnCollisionEnter(CCollisionDispatcher a_oSender, Collision a_oCollision) {
-		// Do Something
+		Debug.LogFormat("HandleOnCollisionEnter : {0}", a_oCollision.gameObject.name);
+
+		/*
+		 * gameObject.CompareTag 메서드를 활용하면 게임 객체에 설정 된 태그를 비교하는
+		 * 것이 가능하다. 또한, 태그 자체는 문자열이기 때문에 해당 메서드를 사용하지않고
+		 * 직접 tag 프로퍼티를 사용해서 태그를 가져온 후 Equals 메서드로 직접 비교하는
+		 * 것도 가능하다.
+		 * 
+		 * 단, tag 를 직접 가져 올 경우 내부적으로 불필요한 메모리 할당이 발생하기 때문에
+		 * 최적화 관점에서는 CompareTag 메서드를 사용하는 것을 추천한다. (즉, 불필요한
+		 * 메모리 할당은 가비지 컬렉션의 동작을 유발 시키기 때문에 이는 곧 프로그램의 성능을
+		 * 저하시키는 원인이 될 수 있다는 것을 의미한다.)
+		 */
+		// 타겟 일 경우
+		if(a_oCollision.gameObject.CompareTag("E02Target")) {
+			/*
+			 * 유니티에서 특정 객체를 제거하고 싶을 경우에는 Destroy 또는 DestroyImmediate
+			 * 메서드를 사용하면 된다.
+			 * 
+			 * Destroy 메서드는 호출 되는 즉시 해당 대상을 제거하는 것이 아니라 일단 내부적으로
+			 * 제거 해야 될 대상을 캐시 한 후 나중에 해당 대상을 안전하게 제거 할 수 있는 시점이
+			 * 되었을 때 비로소 대상을 제거하는 특징이 존재한다.
+			 * 
+			 * 반면, DestroyImmediate 메서드는 호출 되는 즉시 해당 대상을 제거하기 때문에 일반적으로
+			 * 런타임 환경에서 잘 사용되지 않는다. (즉, 유니티 엔진은 내부적으로 렌더링을 비롯한 여러
+			 * 연산을 처리하기 때문에 특정 객체를 즉시 제거하는 것을 추천하지 않는다.)
+			 * 
+			 * 따라서, 일반적으로 런타임 환경에서는 DestroyImmediate 메서드 보다 Destroy 메서드를
+			 * 사용하는 것을 추천하며 게임 객체가 아닌 텍스처와 같은 리소스를 제거 할 경우에만
+			 * DestroyImmediate 메서드를 사용해야한다.
+			 * 
+			 * 또한, 런타임 환경이 아니라 에디터 환경에서 동작하는 스크립트에서는 특정 객체를 제거하기
+			 * 위해서는 반드시 DestroyImmediate 메서드를 사용해야한다.
+			 */
+			GameObject.Destroy(a_oSender.gameObject);
+			GameObject.Destroy(a_oCollision.gameObject);
+		}
 	}
 
 	/** 충돌 진행을 처리한다 */
 	private void HandleOnCollisionStay(CCollisionDispatcher a_oSender, Collision a_oCollision) {
-		// Do Something
+		Debug.LogFormat("HandleOnCollisionStay : {0}", a_oCollision.gameObject.name);
 	}
 
 	/** 충돌 종료를 처리한다 */
 	private void HandleOnCollisionExit(CCollisionDispatcher a_oSender, Collision a_oCollision) {
-		// Do Something
+		Debug.LogFormat("HandleOnCollisionExit : {0}", a_oCollision.gameObject.name);
 	}
+
+#if UNITY_EDITOR
+	/*
+	 * OnDrawGizmos 메서드를 활용하면 유니티 에디터의 씬 뷰에 이미지 등을 출력하는 것이
+	 * 가능하다. (즉, 프로젝트를 제작하는데 도움이 되는 여러 필요한 정보를 씬 뷰에 그리는
+	 * 것이 가능하다는 것을 알 수 있다.)
+	 * 
+	 * 단, 해당 메서드 내부에서 사용되는 Gizmos 클래스는 유니티 엔진의 모든 스크립트에서
+	 * 공통적으로 사용하는 클래스이기 때문에 특정 연산을 수행하기 위해서 해당 클래스의 속성을
+	 * 변경했다면 반드시 작업 완료 된 후에는 원래 속성 정보로 되돌려 줄 필요가 있다. (즉,
+	 * 공통 자원이라는 것을 알 수 있다.)
+	 * 
+	 * 따라서, try ~ finally 구문을 활용하면 해당 클래스를 좀 더 안전하게 활용하는 것이
+	 * 가능하다.
+	 */
+	/** 기즈모를 그린다 */
+	public void OnDrawGizmos() {
+		/** 플레이어가 존재 할 경우 */
+		if(m_oPlayer != null) {
+			var stPrevColor = Gizmos.color;
+
+			try {
+				var oParent = m_oPlayer.transform.parent.gameObject;
+
+				var stPos = m_oPlayer.transform.position;
+				var stDirection = m_oPlayer.transform.forward.ExToWorld(oParent, false);
+
+				Gizmos.color = Color.red;
+				Gizmos.DrawLine(stPos, stPos + (stDirection * 500.0f));
+			} finally {
+				Gizmos.color = stPrevColor;
+			}
+		}
+	}
+#endif // #if UNITY_EDITOR
 	#endregion // 함수
 }
