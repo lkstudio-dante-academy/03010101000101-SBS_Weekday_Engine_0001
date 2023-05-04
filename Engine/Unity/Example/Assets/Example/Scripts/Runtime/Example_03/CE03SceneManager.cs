@@ -16,7 +16,7 @@ public class CE03SceneManager : CSceneManager {
 
 	/** 시작하기 버튼을 눌렀을 경우 */
 	public void OnTouchPlayBtn() {
-		Debug.Log("시작하기 버튼 눌림!!!");
+		CSceneLoader.Inst.LoadScene(KDefine.G_SCENE_N_E04);
 	}
 	#endregion // 함수
 }
