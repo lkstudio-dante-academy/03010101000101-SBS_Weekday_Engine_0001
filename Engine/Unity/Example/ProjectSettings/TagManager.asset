@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - E02Target
+  - E04CollisionArea
+  - E04SafeArea
   layers:
   - Default
   - TransparentFX
