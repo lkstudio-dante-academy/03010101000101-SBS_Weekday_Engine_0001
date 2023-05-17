@@ -19,5 +19,6 @@ public static partial class KDefine {
 	public const string G_SCENE_N_E03 = "Example_03 (플래피 버드 - 시작)";
 	public const string G_SCENE_N_E04 = "Example_04 (플래피 버드 - 플레이)";
 	public const string G_SCENE_N_E05 = "Example_05 (플래피 버드 - 결과)";
+	public const string G_SCENE_N_E06 = "Example_06 (스프라이트, 애니메이션)";
 	#endregion // 기본
 }
