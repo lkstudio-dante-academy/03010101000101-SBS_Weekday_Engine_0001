@@ -39,16 +39,28 @@ using DG.Tweening;
  * 키 프레임 애니메이션은 특정 물체의 값을 미리 키의 형태로 저장 할 필요가 있기 때문에 실행 중에
  * 물체의 상태가 변경되는 상황에 적용하는 것은 불가능하지만 복잡한 형태의 애니메이션을 처리 할 수
  * 있다는 장점이 존재한다.
+ * 
+ * 메카님 애니메이션이란?
+ * - 애니메이션의 상태를 관리하는 시스템을 메카님이라고 한다. (즉, 메카님 자체는 애니메이션이
+ * 아니라 특정 대상의 상태를 관리하기 위한 FSM (Finite State Machine) 이라는 것을 알 수 있다.)
+ * 
+ * 따라서, 메카님 시스템을 이용하면 특정 대상의 상태에 따라 애니메이션을 자동으로 전환 시키는 것이
+ * 가능하다. (즉, 기존 레거시 방식에서는 특정 대상의 애니메이션을 전환하기 하기 이를 직접 스크립트로
+ * 작성 할 필요가 있었지만 메카님 시스템이 도입되고 나서 부터는 더이상 수동으로 애니메이션을 전환 할
+ * 필요가 없다.)
  */
 /** Example 6 */
 public class CE06SceneManager : CSceneManager {
 	#region 변수
 	[Header("=====> Tween Animation <=====")]
-	private Sequence m_oSequence = null;
 	[SerializeField] private GameObject m_oTweenAniTarget = null;
+	private Sequence m_oSequence = null;
 
 	[Header("=====> Legacy Animation <=====")]
 	[SerializeField] private GameObject m_oLegacyAniTarget = null;
+
+	[Header("=====> Mecanim Animation <=====")]
+	[SerializeField] private GameObject m_oMecanimAniTarget = null;
 	#endregion // 변수
 
 	#region 프로퍼티
@@ -89,6 +101,12 @@ public class CE06SceneManager : CSceneManager {
 
 			m_oSequence?.Kill();
 			m_oSequence = oAni;
+		}
+#elif E06_ANIMATION_MECANIM
+		// 스페이스 키를 눌렀을 경우
+		if(Input.GetKeyDown(KeyCode.Space)) {
+			var oAnimator = m_oMecanimAniTarget.GetComponent<Animator>();
+			oAnimator.SetTrigger("Run");
 		}
 #endif // #if E06_ANIMATION_TWEEN
 	}
