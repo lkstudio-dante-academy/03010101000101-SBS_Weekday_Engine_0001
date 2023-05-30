@@ -2,6 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/** 마우스 버튼 */
+public enum EMouseBtn {
+	NONE = -1,
+	LEFT,
+	RIGHT,
+	MIDDLE,
+	[HideInInspector] MAX_VAL
+}
+
 /** 전역 상수 */
 public static partial class KDefine {
 	#region 기본
