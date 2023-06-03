@@ -5,6 +5,14 @@ using TMPro;
 
 /** Example 8 */
 public class CE08SceneManager : CSceneManager {
+	/** 상태 */
+	private enum EState {
+		NONE = -1,
+		PLAY,
+		GAME_OVER,
+		[HideInInspector] MAX_VAL
+	}
+
 	#region 변수
 	[Header("=====> UIs <=====")]
 	[SerializeField] private TMP_Text m_oTimeText = null;
@@ -15,6 +23,8 @@ public class CE08SceneManager : CSceneManager {
 	[SerializeField] private GameObject m_oOriginScoreText = null;
 
 	private int m_nScore = 0;
+	private EState m_eState = EState.PLAY;
+
 	private float m_fLeftPlayTime = 30.0f;
 	#endregion // 변수
 
@@ -26,12 +36,29 @@ public class CE08SceneManager : CSceneManager {
 	/** 초기화 */
 	public override void Awake() {
 		base.Awake();
+		Time.timeScale = 1.0f;
 	}
 
 	/** 상태를 갱신한다 */
 	public override void Update() {
 		base.Update();
 		m_fLeftPlayTime = Mathf.Max(0.0f, m_fLeftPlayTime - Time.deltaTime);
+
+		// 플레이 시간이 다 지났을 경우
+		if(m_eState == EState.PLAY && m_fLeftPlayTime.ExIsLessEquals(0.0f)) {
+			m_eState = EState.GAME_OVER;
+			CE08ResultStorage.Inst.Score = m_nScore;
+
+			/*
+			 * Time.timeScale 프로퍼티는 흘러간 시간 비율을 설정하는 역할을 수행한다. (즉,
+			 * 해당 프로퍼티의 값이 어떤 값인지에 따라 Time.deltaTime 값이 보정 된다는 것을
+			 * 알 수 있다.)
+			 */
+			Time.timeScale = 0.0f;
+
+			CSceneLoader.Inst.LoadScene(KDefine.G_SCENE_N_E09, 
+				UnityEngine.SceneManagement.LoadSceneMode.Additive);
+		}
 
 		/*
 		 * 정점 변환 단계

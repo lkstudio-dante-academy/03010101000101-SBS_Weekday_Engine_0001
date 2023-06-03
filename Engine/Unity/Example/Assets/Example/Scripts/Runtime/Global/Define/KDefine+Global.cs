@@ -22,6 +22,9 @@ public static partial class KDefine {
 	public static readonly Vector3 G_DESIGN_SIZE = new Vector3(G_DESIGN_WIDTH, G_DESIGN_HEIGHT, 0.0f);
 	// 단위 }
 
+	// 레이어 이름
+	public const string G_LAYER_N_DEF = "Default";
+
 	// 씬 이름
 	public const string G_SCENE_N_E01 = "Example_01 (Unity 기초)";
 	public const string G_SCENE_N_E02 = "Example_02 (프리팹, 물리 엔진)";
@@ -32,5 +35,6 @@ public static partial class KDefine {
 	public const string G_SCENE_N_E07 = "Example_07 (두더지 잡기 - 시작)";
 	public const string G_SCENE_N_E08 = "Example_08 (두더지 잡기 - 플레이)";
 	public const string G_SCENE_N_E09 = "Example_09 (두더지 잡기 - 결과)";
+	public const string G_SCENE_N_E10 = "Example_10 (UGUI)";
 	#endregion // 기본
 }

@@ -17,7 +17,7 @@ public class CE09SceneManager : CSceneManager {
 	/** 초기화 */
 	public override void Awake() {
 		base.Awake();
-		m_oScoreText.text = string.Format("점수 : {0}", CE04ResultStorage.Inst.Score);
+		m_oScoreText.text = string.Format("점수 : {0}", CE08ResultStorage.Inst.Score);
 	}
 
 	/** 다시하기 버튼을 눌렀을 경우 */

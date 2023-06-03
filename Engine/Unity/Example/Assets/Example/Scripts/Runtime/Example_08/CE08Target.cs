@@ -49,6 +49,12 @@ public class CE08Target : CComponent {
 
 	/** 오픈 상태로 전환한다 */
 	private IEnumerator TryOpen() {
+		/*
+		 * WaitForSeconds vs WaitForSecondsRealtime
+		 * - WaitForSeconds 내부적으로 흘러간 시간을 계산하기 위해서 Time.deltaTime 을 사용하는
+		 * 반면, WaitForSecondsRealtime 내부적으로 Time.unscaledDeltaTime 을 사용한다는 차이점
+		 * 이 존재한다. (즉, WaitForSeconds 는 Time.timeScale 에 영향을 받는다는 것을 알 수 있다.)
+		 */
 		yield return new WaitForSeconds(Random.Range(0.15f, 6.0f));
 		int nSelTarget = Random.Range(0, 2);
 
