@@ -4,6 +4,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /*
  * 유니티 UI 시스템 종류
@@ -30,6 +31,11 @@ using UnityEngine;
  */
 /** Example 10 */
 public class CE10SceneManager : CSceneManager {
+	#region 변수
+	[Header("=====> Unity GUI <=====")]
+	[SerializeField] private List<Toggle> m_oToggleList = new List<Toggle>();
+	#endregion // 변수
+
 	#region 프로퍼티
 	public override string SceneName => KDefine.G_SCENE_N_E10;
 	#endregion // 프로퍼티
@@ -38,6 +44,12 @@ public class CE10SceneManager : CSceneManager {
 	/** 초기화 */
 	public override void Awake() {
 		base.Awake();
+
+#if E10_UNITY_GUI
+		for(int i = 0; i < m_oToggleList.Count; ++i) {
+			m_oToggleList[i].onValueChanged.AddListener(this.OnTouchToggle);
+		}
+#endif // #if E10_UNITY_GUI
 	}
 
 	/** GUI 를 그린다 */
@@ -50,6 +62,11 @@ public class CE10SceneManager : CSceneManager {
 			Debug.Log("버튼이 눌렸습니다!");
 		}
 #endif // #if E10_IMGUI
+	}
+
+	/** 토글을 눌렀을 경우 */
+	public void OnTouchToggle(bool a_bIsOn) {
+		Debug.LogFormat("OnTouchToggle: {0}", a_bIsOn);
 	}
 	#endregion // 함수
 }

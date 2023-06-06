@@ -26,6 +26,7 @@ public static partial class KDefine {
 	public const string G_LAYER_N_DEF = "Default";
 
 	// 씬 이름
+	public const string G_SCENE_N_E00 = "Example_00 (메뉴)";
 	public const string G_SCENE_N_E01 = "Example_01 (Unity 기초)";
 	public const string G_SCENE_N_E02 = "Example_02 (프리팹, 물리 엔진)";
 	public const string G_SCENE_N_E03 = "Example_03 (플래피 버드 - 시작)";
