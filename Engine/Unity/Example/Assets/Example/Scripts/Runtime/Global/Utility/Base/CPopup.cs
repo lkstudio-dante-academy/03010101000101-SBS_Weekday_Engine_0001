@@ -38,14 +38,14 @@ public abstract class CPopup : CComponent {
 	/** 팝업을 출력한다 */
 	public void Show() {
 		this.ResetAnimations();
-		m_oShowAni = this.Contents.transform.DOScale(Vector3.one, 0.25f).SetAutoKill();
+		m_oShowAni = this.Contents.transform.DOScale(Vector3.one, 0.15f).SetAutoKill();
 	}
 
 	/** 팝업을 닫는다 */
 	public void Close() {
 		this.ResetAnimations();
 
-		m_oCloseAni = this.Contents.transform.DOScale(new Vector3(0.01f, 0.01f, 0.01f), 0.25f).SetAutoKill();
+		m_oCloseAni = this.Contents.transform.DOScale(new Vector3(0.01f, 0.01f, 0.01f), 0.15f).SetAutoKill();
 		m_oCloseAni.onComplete = this.OnCompleteCloseAni;
 	}
 

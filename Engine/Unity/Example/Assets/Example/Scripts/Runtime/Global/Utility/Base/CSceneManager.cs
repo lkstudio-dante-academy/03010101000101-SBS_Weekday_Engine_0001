@@ -23,11 +23,20 @@ public abstract class CSceneManager : CComponent {
 	public virtual Vector3 Gravity => new Vector3(0.0f, -1280.0f, 0.0f);
 	#endregion // 프로퍼티
 
+	#region 클래스 프로퍼티
+	public static bool IsLoadTables { get; private set; } = false;
+	#endregion // 클래스 프로퍼티
+
 	#region 함수
 	/** 초기화 */
 	public override void Awake() {
 		base.Awake();
 		Physics.gravity = this.Gravity;
+
+		// 테이블 로드가 필요 할 경우
+		if(!CSceneManager.IsLoadTables) {
+			CStrTable.Inst.LoadStrTable("Global/Tables/StrTable");
+		}
 
 		/*
 		 * GameObject.Find 메서드를 활용하면 씬 상에 존재하는 게임 객체를 탐색하는 것이
@@ -76,6 +85,42 @@ public abstract class CSceneManager : CComponent {
 		// 고유 컴포넌트를 설정한다
 		this.Base.GetComponentInChildren<AudioListener>().enabled = this.IsActiveScene;
 		this.EventSystem.GetComponentInChildren<EventSystem>().enabled = this.IsActiveScene;
+	}
+
+	/** 상태를 갱신한다 */
+	public override void Update() {
+		base.Update();
+
+		// Esc 키를 눌렀을 경우
+		if(Input.GetKeyDown(KeyCode.Escape) && !this.SceneName.Equals(KDefine.G_SCENE_N_E00)) {
+			var oAlertPopup = this.PopupUIs.GetComponentInChildren<CAlertPopup>();
+
+			// 알림 팝업이 존재 할 경우
+			if(oAlertPopup != null) {
+				oAlertPopup.Close();
+			} else {
+				/*
+				 * 문자열 테이블이란?
+				 * - 프로그램이 동작하는 국가의 언어에 맞춰서 문장을 치환 시킬 수 있는 정보를
+				 * 지니고 있는 데이터의 집합을 의미한다. (즉, 여러 국가에 서비스 되는 프로그램을
+				 * 제작하기 위해서는 지역화 처리를 해줄 필요가 있으며 해당 처리는 문자열 테이블을
+				 * 활용하면 좀 더 수월하게 지역화 처리를 할 수 있다.)
+				 */
+				oAlertPopup = CAlertPopup.CreateAlertPopup(CStrTable.Inst.GetStr(SystemLanguage.English, "ALERT_MSG_MENU"),
+					this.PopupUIs);
+
+				oAlertPopup.Show(this.OnReceiveAlertPopupCallback);
+			}
+		}
+	}
+
+	/** 알림 팝업 콜백을 수신했을 경우 */
+	protected virtual void OnReceiveAlertPopupCallback(CAlertPopup a_oSender, 
+		bool a_bIsOK) {
+		// 확인 버튼을 눌렀을 경우
+		if(a_bIsOK) {
+			CSceneLoader.Inst.LoadScene(KDefine.G_SCENE_N_E00);
+		}
 	}
 	#endregion // 함수
 }

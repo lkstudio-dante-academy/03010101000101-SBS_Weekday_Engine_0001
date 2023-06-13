@@ -14,6 +14,8 @@ public class CAlertPopup : CPopup {
 	}
 
 	#region 변수
+	private System.Action<CAlertPopup, bool> m_oCallback = null;
+
 	[Header("=====> UIs <=====")]
 	[SerializeField] private Text m_oTitleText = null;
 	[SerializeField] private Text m_oMsgText = null;
@@ -28,8 +30,24 @@ public class CAlertPopup : CPopup {
 
 	#region 함수
 	/** 초기화 */
+	public override void Awake() {
+		base.Awake();
+
+		// 버튼을 설정한다
+		m_oOKBtn.onClick.AddListener(this.OnTouchOKBtn);
+		m_oCancelBtn.onClick.AddListener(this.OnTouchCancelBtn);
+	}
+
+	/** 초기화 */
 	public virtual void Init(STParams a_stParams) {
 		this.Params = a_stParams;
+		this.UpdateUIsState();
+	}
+
+	/** 알림 팝업을 출력한다 */
+	public void Show(System.Action<CAlertPopup, bool> a_oCallback) {
+		base.Show();
+		m_oCallback = a_oCallback;
 	}
 
 	/** UI 상태를 갱신한다 */
@@ -47,6 +65,18 @@ public class CAlertPopup : CPopup {
 		} else {
 			m_oCancelBtn.gameObject.SetActive(false);
 		}
+	}
+
+	/** 확인 버튼을 눌렀을 경우 */
+	private void OnTouchOKBtn() {
+		m_oCallback?.Invoke(this, true);
+		this.Close();
+	}
+
+	/** 취소 버튼을 눌렀을 경우 */
+	private void OnTouchCancelBtn() {
+		m_oCallback?.Invoke(this, false);
+		this.Close();
 	}
 	#endregion // 함수
 
