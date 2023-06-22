@@ -106,7 +106,7 @@ public abstract class CSceneManager : CComponent {
 				 * 제작하기 위해서는 지역화 처리를 해줄 필요가 있으며 해당 처리는 문자열 테이블을
 				 * 활용하면 좀 더 수월하게 지역화 처리를 할 수 있다.)
 				 */
-				oAlertPopup = CAlertPopup.CreateAlertPopup(CStrTable.Inst.GetStr(SystemLanguage.English, "ALERT_MSG_MENU"),
+				oAlertPopup = CAlertPopup.CreateAlertPopup(CStrTable.Inst.GetStr("ALERT_MSG_MENU"),
 					this.PopupUIs);
 
 				oAlertPopup.Show(this.OnReceiveAlertPopupCallback);
