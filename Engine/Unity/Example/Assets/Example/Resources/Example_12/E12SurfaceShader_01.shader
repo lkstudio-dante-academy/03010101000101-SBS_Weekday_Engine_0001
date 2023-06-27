@@ -45,6 +45,10 @@ Shader "Example_12/E12SurfaceShader_01" {
 
 		float4 _Color;
 
+		/*
+		* 정점 쉐이더 동작 할 때 입력으로 전달 되는 점 데이터의 구조를 의미한다. (즉, 입력 
+		* 데이터는 필요에 따라 위치 정보 이외에 부가적인 정보를 추가하는 것이 가능하다.)
+		*/
 		/** 입력 */
 		struct Input {
 			float4 color;
@@ -53,7 +57,7 @@ Shader "Example_12/E12SurfaceShader_01" {
 		/** 서피스 쉐이더 */
 		void SSMain(Input a_stInput, inout SurfaceOutputStandard a_stOutput) {
 			a_stOutput.Alpha = _Color.a;
-			a_stOutput.Albedo = float3(1.0, 0.0, 0.0);//_Color.rgb;
+			a_stOutput.Albedo = _Color.rgb;
 		}
 		ENDCG
 	}

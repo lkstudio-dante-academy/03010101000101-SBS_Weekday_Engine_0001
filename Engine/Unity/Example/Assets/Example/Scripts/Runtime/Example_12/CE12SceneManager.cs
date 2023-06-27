@@ -32,6 +32,10 @@ using UnityEngine;
  */
 /** Example 12 */
 public class CE12SceneManager : CSceneManager {
+	#region 변수
+	[SerializeField] private GameObject m_oSphereRoot = null;
+	#endregion // 변수
+
 	#region 프로퍼티
 	public override string SceneName => KDefine.G_SCENE_N_E12;
 	#endregion // 프로퍼티
@@ -40,6 +44,16 @@ public class CE12SceneManager : CSceneManager {
 	/** 초기화 */
 	public override void Awake() {
 		base.Awake();
+	}
+
+	/** 상태를 갱신한다 */
+	public override void Update() {
+		base.Update();
+
+		for(int i = 0; i < m_oSphereRoot.transform.childCount; ++i) {
+			var oTrans = m_oSphereRoot.transform.GetChild(i);
+			oTrans.Rotate(Vector3.up * 180.0f * Time.deltaTime, Space.World);
+		}
 	}
 	#endregion // 함수
 }
