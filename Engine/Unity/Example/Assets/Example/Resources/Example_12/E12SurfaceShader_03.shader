@@ -30,6 +30,11 @@ Shader "Example_12/E12SurfaceShader_03" {
 			float2 uv_MainTex;
 		};
 
+		/*
+		* SurfaceOutputCustom 구조체를 활용하면 광원 연산을 커스텀하게 처리 할 때 필요한 정보를
+		* 추가적으로 전달하는 것이 가능하다. (즉, 유니티가 필요로하는 기본적인 정보 이외에도
+		* 부가적인 정보를 추가적으로 전달 할 수 있다는 것을 알 수 있다.)
+		*/
 		/** 출력 */
 		struct SurfaceOutputCustom {
 			float Gloss;
@@ -50,7 +55,8 @@ Shader "Example_12/E12SurfaceShader_03" {
 		}
 
 		/** 광원을 처리한다 */
-		float4 LightingCustom(SurfaceOutputCustom a_stOutput, float3 a_stLightDirection, float3 a_stViewDirection, float a_fAttenuation) {
+		float4 LightingCustom(SurfaceOutputCustom a_stOutput, 
+			float3 a_stLightDirection, float3 a_stViewDirection, float a_fAttenuation) {
 			float3 stHalf = normalize(a_stLightDirection + a_stViewDirection);
 
 			float fDot = saturate(dot(a_stOutput.Normal, a_stLightDirection));

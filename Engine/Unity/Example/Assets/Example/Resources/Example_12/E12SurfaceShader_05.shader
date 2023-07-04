@@ -7,11 +7,21 @@ Shader "Example_12/E12SurfaceShader_05" {
 	}
 	SubShader{
 		Tags {
+			/*
+			* 유니티는 내부적으로 물체를 화면 상에 그릴 때 투명한 물체와 불투명한 물체를 처리하기
+			* 위한 과정이 구분된다. (즉, 불투명한 물체라 하더라도 투명한 물체를 처리하기 위한
+			* Transparent 속성을 지정해주면 내부적으로 물체를 그려내는 과정에서 부하가 발생한다는
+			* 것을 알 수 있다.)
+			*/
 			"Queue" = "Transparent+1"
 			"RenderType" = "Transparent"
 		}
 
 		CGPROGRAM
+		/*
+		* alpha:fade 속성을 지정하면 반투명한 물체를 화면 상에 출력하는 것이 가능하다. (즉,
+		* 해당 속성은 알파 값에 따라 물체의 투명도 여부를 설정하는 속성이라는 것을 알 수 있다.)
+		*/
 		#pragma target 3.0
 		#pragma surface SSMain Custom alpha:fade
 

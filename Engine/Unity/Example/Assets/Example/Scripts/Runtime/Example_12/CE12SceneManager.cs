@@ -33,12 +33,7 @@ using UnityEngine;
 /** Example 12 */
 public class CE12SceneManager : CSceneManager {
 	#region 변수
-	private float m_fCutout = 0.0f;
-	private float m_fSkipTime = 0.0f;
-	private float m_Refraction = 0.0f;
-
 	[SerializeField] private GameObject m_oSphereRoot = null;
-	[SerializeField] private MeshRenderer m_oQuadMeshRenderer = null;
 	#endregion // 변수
 
 	#region 프로퍼티
@@ -55,25 +50,9 @@ public class CE12SceneManager : CSceneManager {
 	public override void Update() {
 		base.Update();
 
-		/*
-		* Material 객체의 Set 계열 메서드를 활용하면 Properties 영역에 명시한 속성을 변경하는 것이 가능하다. (즉, 프로그램이 실행 중에
-		* 속성을 변경함으로서 다양한 효과를 연출하는 것이 가능하다.)
-		*/
-		m_fSkipTime += Time.deltaTime;
-		m_oQuadMeshRenderer.material.SetFloat("_Refraction", Mathf.Sin(m_fSkipTime * 5.0f) / 2.0f);
-
-		// 투명도 조절 키를 눌렀을 경우
-		if(Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow)) {
-			float fOffset = Input.GetKey(KeyCode.UpArrow) ? 1.0f : -1.0f;
-			m_fCutout = Mathf.Clamp01(m_fCutout + (fOffset * Time.deltaTime));
-		}
-
 		for(int i = 0; i < m_oSphereRoot.transform.childCount; ++i) {
 			var oTrans = m_oSphereRoot.transform.GetChild(i);
-			oTrans.Rotate(Vector3.up * 90.0f * Time.deltaTime, Space.World);
-
-			var oRenderer = oTrans.GetComponent<MeshRenderer>();
-			oRenderer.material.SetFloat("_Cutout", m_fCutout);
+			oTrans.Rotate(Vector3.up * 180.0f * Time.deltaTime, Space.World);
 		}
 	}
 	#endregion // 함수

@@ -10,6 +10,11 @@ Shader "Example_12/E12SurfaceShader_07" {
 
 		cull front
 
+		/*
+		* vertex:VSMain 속성을 설정하면 서피스 쉐이더에서 정점 쉐이더를 제어하는 것이 가능하다.
+		* (즉, 해당 속성을 활용하면 정점 연산이 수행되는 과정에서 추가적인 작업을 처리하는 것이
+		* 가능하다.)
+		*/
 		CGPROGRAM
 		#pragma target 3.0
 		#pragma surface SSMain Custom vertex:VSMain

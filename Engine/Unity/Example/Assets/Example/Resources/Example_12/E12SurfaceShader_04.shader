@@ -53,9 +53,10 @@ Shader "Example_12/E12SurfaceShader_04" {
 			float4 stColor = tex2D(_MainTex, a_stInput.uv_MainTex);
 
 			/*
-			* UnpackNormal 함수는 탄젠트 (오브젝트) 공간에 존재하는 법선을 월드 공간으로 변환 시키는 역할을 수행한다.
-			* (즉, 노말 맵을 제작하는 프로그램은 탄젠트 공간 상에 존재하는 노말 정보를 기반으로 노말 텍스처를 제작하기 때문에 해당 데이터를
-			* 바로 광원 연산에 활용하는 것은 불가능하다는 것을 알 수 있다.)
+			* UnpackNormal 함수는 탄젠트 (오브젝트) 공간에 존재하는 법선을 월드 공간으로 변환 
+			* 시키는 역할을 수행한다. (즉, 노말 맵을 제작하는 프로그램은 탄젠트 공간 상에 
+			* 존재하는 노말 정보를 기반으로 노말 텍스처를 제작하기 때문에 해당 데이터를 바로 
+			* 광원 연산에 활용하는 것은 불가능하다는 것을 알 수 있다.)
 			*/
 			float3 stNormal = UnpackNormal(tex2D(_NormalTex, a_stInput.uv_NormalTex));
 
@@ -67,7 +68,8 @@ Shader "Example_12/E12SurfaceShader_04" {
 		}
 
 		/** 광원을 처리한다 */
-		float4 LightingCustom(SurfaceOutputCustom a_stOutput, float3 a_stLightDirection, float3 a_stViewDirection, float a_fAttenuation) {
+		float4 LightingCustom(SurfaceOutputCustom a_stOutput, 
+			float3 a_stLightDirection, float3 a_stViewDirection, float a_fAttenuation) {
 			float3 stHalf = normalize(a_stLightDirection + a_stViewDirection);
 
 			float fDot = saturate(dot(a_stOutput.Normal, a_stLightDirection));
