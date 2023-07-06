@@ -39,5 +39,6 @@ public static partial class KDefine {
 	public const string G_SCENE_N_E10 = "Example_10 (UGUI)";
 	public const string G_SCENE_N_E11 = "Example_11 (사운드)";
 	public const string G_SCENE_N_E12 = "Example_12 (쉐이더)";
+	public const string G_SCENE_N_E13 = "Example_13 (네비게이션 메쉬)";
 	#endregion // 기본
 }

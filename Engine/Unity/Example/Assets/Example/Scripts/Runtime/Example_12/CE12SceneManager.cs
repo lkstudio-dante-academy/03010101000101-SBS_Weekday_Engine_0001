@@ -33,7 +33,10 @@ using UnityEngine;
 /** Example 12 */
 public class CE12SceneManager : CSceneManager {
 	#region 변수
+	private float m_fCutout = 0.0f;
+
 	[SerializeField] private GameObject m_oSphereRoot = null;
+	[SerializeField] private GameObject m_oCutoutSphere = null;
 	#endregion // 변수
 
 	#region 프로퍼티
@@ -49,6 +52,28 @@ public class CE12SceneManager : CSceneManager {
 	/** 상태를 갱신한다 */
 	public override void Update() {
 		base.Update();
+
+		// Cutout 제어 키를 눌렀을 경우
+		if(Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow)) {
+			float fOffset = Input.GetKey(KeyCode.UpArrow) ? 1.0f : -1.0f;
+			m_fCutout = Mathf.Clamp01(m_fCutout + (fOffset * Time.deltaTime));
+
+			var oRenderer = m_oCutoutSphere.GetComponent<MeshRenderer>();
+
+			/*
+			 * Material 의 Set or Get 계열 메서드를 활용하면 쉐이더에 명시 된 Properties 값을
+			 * 변경하거나 가져오는 것이 가능하다. (즉, 해당 메서드를 활용하면 프로그램이 실행 
+			 * 중에 Properties 값을 게임 객체마다 개별적으로 제어 할 수 있다는 것을 알 수 있다.)
+			 * 
+			 * material vs sharedMaterial
+			 * - 두 프로퍼티 모두 렌더러에 설정 된 메인 재질을 가져오는 역할을 수행한다.
+			 * material 은 원본과 동일한 값을 지니는 사본을 가져오는 반면 sharedMaterial 는
+			 * 원본을 가져오기 때문에 해당 프로퍼티로 가져온 재질의 속성을 값을 변경하면 다른
+			 * 객체에도 영향을 미칠 수 있다는 차이점이 존재한다. (즉, material 프로퍼티는 사본을
+			 * 만들어내기 때문에 빈번하게 사용 할 경우 성능 저하가 발생 할 수 있다.)
+			 */
+			oRenderer.material.SetFloat("_Cutout", m_fCutout);
+		}
 
 		for(int i = 0; i < m_oSphereRoot.transform.childCount; ++i) {
 			var oTrans = m_oSphereRoot.transform.GetChild(i);

@@ -8,6 +8,7 @@ TagManager:
   - E04CollisionArea
   - E04SafeArea
   - E08Target
+  - E13Ground
   layers:
   - Default
   - TransparentFX
