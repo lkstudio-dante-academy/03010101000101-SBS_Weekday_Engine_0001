@@ -9,6 +9,7 @@ TagManager:
   - E04SafeArea
   - E08Target
   - E13Ground
+  - E13Obstacle
   layers:
   - Default
   - TransparentFX

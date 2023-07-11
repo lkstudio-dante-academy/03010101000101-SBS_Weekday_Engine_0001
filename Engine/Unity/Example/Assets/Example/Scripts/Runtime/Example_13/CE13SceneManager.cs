@@ -48,10 +48,12 @@ public class CE13SceneManager : CSceneManager {
 		// 마우스 버튼을 눌렀을 경우
 		if(Input.GetMouseButtonDown((int)EMouseBtn.LEFT)) {
 			var oRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
 			bool bIsHit = Physics.Raycast(oRay, out RaycastHit stRaycastHit);
+			bool bIsGround = stRaycastHit.collider.CompareTag("E13Ground");
 
 			// 바닥을 눌렀을 경우
-			if(bIsHit && stRaycastHit.collider.CompareTag("E13Ground")) {
+			if(bIsHit && (bIsGround || stRaycastHit.collider.CompareTag("E13Obstacle"))) {
 				var oNavMeshAgent = m_oTarget.GetComponent<NavMeshAgent>();
 				oNavMeshAgent.SetDestination(stRaycastHit.point);
 			}
