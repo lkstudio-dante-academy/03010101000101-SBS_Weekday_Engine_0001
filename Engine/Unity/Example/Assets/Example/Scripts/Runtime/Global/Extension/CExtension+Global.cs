@@ -17,13 +17,13 @@ public static partial class CExtension {
 	}
 
 	/** 큰 여부를 검사한다 */
-	public static bool ExIsGreate(this float a_fSender, float a_fRhs) {
+	public static bool ExIsGreat(this float a_fSender, float a_fRhs) {
 		return a_fSender > a_fRhs + float.Epsilon;
 	}
 
 	/** 크거나 같음 여부를 검사한다 */
-	public static bool ExIsGreateEquals(this float a_fSender, float a_fRhs) {
-		return a_fSender.ExIsGreate(a_fRhs) || a_fSender.ExIsEquals(a_fRhs);
+	public static bool ExIsGreatEquals(this float a_fSender, float a_fRhs) {
+		return a_fSender.ExIsGreat(a_fRhs) || a_fSender.ExIsEquals(a_fRhs);
 	}
 
 	/** 같음 여부를 검사한다 */
