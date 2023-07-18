@@ -6,6 +6,10 @@ using UnityEngine.SceneManagement;
 
 /** 씬 관리자 */
 public abstract class CSceneManager : CComponent {
+	#region 클래스 변수
+	private static Dictionary<string, CSceneManager> m_oSceneManagerDict = new Dictionary<string, CSceneManager>();
+	#endregion // 클래스 변수
+
 	#region 프로퍼티
 	public abstract string SceneName { get; }
 
@@ -32,6 +36,8 @@ public abstract class CSceneManager : CComponent {
 	public override void Awake() {
 		base.Awake();
 		Physics.gravity = this.Gravity;
+
+		CSceneManager.m_oSceneManagerDict.TryAdd(this.SceneName, this);
 
 		// 테이블 로드가 필요 할 경우
 		if(!CSceneManager.IsLoadTables) {
@@ -114,6 +120,16 @@ public abstract class CSceneManager : CComponent {
 		}
 	}
 
+	/** 제거 되었을 경우 */
+	public override void OnDestroy() {
+		base.OnDestroy();
+
+		// 씬 관리자가 존재 할 경우
+		if(CSceneManager.m_oSceneManagerDict.ContainsKey(this.SceneName)) {
+			CSceneManager.m_oSceneManagerDict.Remove(this.SceneName);
+		}
+	}
+
 	/** 알림 팝업 콜백을 수신했을 경우 */
 	protected virtual void OnReceiveAlertPopupCallback(CAlertPopup a_oSender, 
 		bool a_bIsOK) {
@@ -123,4 +139,11 @@ public abstract class CSceneManager : CComponent {
 		}
 	}
 	#endregion // 함수
+
+	#region 제네릭 함수
+	/** 씬 관리자를 반환한다 */
+	public static T GetSceneManager<T>(string a_oSceneName) where T : CSceneManager {
+		return CSceneManager.m_oSceneManagerDict.GetValueOrDefault(a_oSceneName) as T;
+	}
+	#endregion // 제네릭 함수
 }

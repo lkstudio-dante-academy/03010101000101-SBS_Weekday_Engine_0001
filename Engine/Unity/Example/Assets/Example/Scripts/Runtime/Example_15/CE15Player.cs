@@ -7,6 +7,7 @@ public class CE15Player : CComponent
 {
     #region 변수
     private Animation m_oAnimation = null;
+	[SerializeField] private GameObject m_oBulletSpawnPos = null;
 	#endregion // 변수
 
 	#region 함수
@@ -69,5 +70,27 @@ public class CE15Player : CComponent
 			}
 		}
     }
+
+	/** 총알을 발사한다 */
+	public void Fire(GameObject a_oOriginBullet, GameObject a_oBulletRoot) {
+		var oBullet = this.CreateBullet(a_oOriginBullet, a_oBulletRoot);
+		oBullet.transform.forward = this.transform.forward;
+		oBullet.transform.position = m_oBulletSpawnPos.transform.position;
+
+		var oRigidbody = oBullet.GetComponent<Rigidbody>();
+		oRigidbody.AddForce(this.transform.forward * 500.0f, ForceMode.VelocityChange);
+	}
+
+	/** 총알을 생성한다 */
+	private CE15Bullet CreateBullet(GameObject a_oOriginBullet, GameObject a_oBulletRoot) {
+		var oSceneManager = CSceneManager.GetSceneManager<CE15SceneManager>(KDefine.G_SCENE_N_E15);
+
+		var oBullet = oSceneManager.ObjsPoolManager.SpawnObj<CE15Bullet>(() => {
+			return CFactory.CreateCloneGameObj("Bullet",
+				a_oOriginBullet, a_oBulletRoot, Vector3.zero, Vector3.one, Vector3.zero);
+		}) as GameObject;
+
+		return oBullet.GetComponent<CE15Bullet>();
+	}
     #endregion // 함수
 }
