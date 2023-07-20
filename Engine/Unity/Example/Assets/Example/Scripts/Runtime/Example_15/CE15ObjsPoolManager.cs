@@ -30,11 +30,13 @@ public class CE15ObjsPoolManager : CComponent {
 	}
 
 	/** 객체를 비활성화한다 */
-	public void DespawnObj<T>(object a_oObj) {
+	public void DespawnObj<T>(object a_oObj, System.Action<object> a_oCallback) {
 		// 객체 풀이 존재 할 경우
 		if(m_oPoolListDict.TryGetValue(typeof(T), out CPoolList<object> oPoolList)) { 
 			oPoolList.m_oList.Remove(a_oObj);
 			oPoolList.m_oQueue.Enqueue(a_oObj);
+
+			a_oCallback?.Invoke(a_oObj);
 		}
 	}
 	#endregion // 함수

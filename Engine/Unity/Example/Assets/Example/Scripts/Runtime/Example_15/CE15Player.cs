@@ -7,6 +7,8 @@ public class CE15Player : CComponent
 {
     #region 변수
     private Animation m_oAnimation = null;
+
+	[SerializeField] private GameObject m_oMuzzleFlash = null;
 	[SerializeField] private GameObject m_oBulletSpawnPos = null;
 	#endregion // 변수
 
@@ -14,7 +16,9 @@ public class CE15Player : CComponent
 	/** 초기화 */
 	public override void Awake() {
 		base.Awake();
+
 		m_oAnimation = this.GetComponent<Animation>();
+		m_oMuzzleFlash.SetActive(false);
 	}
 
 	/** 상태를 갱신한다 */
@@ -77,8 +81,27 @@ public class CE15Player : CComponent
 		oBullet.transform.forward = this.transform.forward;
 		oBullet.transform.position = m_oBulletSpawnPos.transform.position;
 
+		oBullet.Init();
+
+		StopCoroutine("StartMuzzleFlash");
+		StartCoroutine(this.StartMuzzleFlash());
+
 		var oRigidbody = oBullet.GetComponent<Rigidbody>();
-		oRigidbody.AddForce(this.transform.forward * 500.0f, ForceMode.VelocityChange);
+		oRigidbody.AddForce(this.transform.forward * 2500.0f, ForceMode.VelocityChange);
+	}
+
+	/** 발사 효과를 시작한다 */
+	private IEnumerator StartMuzzleFlash() {
+		float fOffsetU = Random.Range(0, 2) * 0.5f;
+		float fOffsetV = Random.Range(0, 2) * 0.5f;
+
+		var oMeshRenderer = m_oMuzzleFlash.GetComponent<MeshRenderer>();
+		oMeshRenderer.material.mainTextureOffset = new Vector2(fOffsetU, fOffsetV);
+
+		m_oMuzzleFlash.SetActive(true);
+		yield return new WaitForSeconds(0.05f);
+
+		m_oMuzzleFlash.SetActive(false);
 	}
 
 	/** 총알을 생성한다 */
@@ -90,6 +113,7 @@ public class CE15Player : CComponent
 				a_oOriginBullet, a_oBulletRoot, Vector3.zero, Vector3.one, Vector3.zero);
 		}) as GameObject;
 
+		oBullet.SetActive(true);
 		return oBullet.GetComponent<CE15Bullet>();
 	}
     #endregion // 함수
