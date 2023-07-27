@@ -12,6 +12,8 @@ public class CE15SceneManager : CSceneManager {
 
 	#region 프로퍼티
 	public override string SceneName => KDefine.G_SCENE_N_E15;
+	public CE15Player Player => m_oPlayer;
+
 	public CE15ObjsPoolManager ObjsPoolManager { get; private set; } = null;
 	#endregion // 프로퍼티
 
