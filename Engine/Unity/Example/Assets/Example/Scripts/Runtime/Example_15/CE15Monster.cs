@@ -1,11 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.AI;
 
 /** 몬스터 */
 public class CE15Monster : CE15Interactable {
+	#region 변수
+	[SerializeField] private float m_fAttackRange = 0.0f;
+	[SerializeField] private float m_fTrackingRange = 0.0f;
+
+#if UNITY_EDITOR
+	[SerializeField] private string m_oCurState = string.Empty;
+#endif // #if UNITY_EDITOR
+	#endregion // 변수
+
 	#region 프로퍼티
+	public float AttackRange => m_fAttackRange;
+	public float TrackingRange => m_fTrackingRange;
+
+	public Animator Animator { get; private set; } = null;
 	public NavMeshAgent NavMeshAgent { get; private set; } = null;
 	public CE15StateMachine StateMachine { get; } = new CE15StateMachine();
 	#endregion // 프로퍼티
@@ -16,14 +30,19 @@ public class CE15Monster : CE15Interactable {
 		base.Awake();
 		this.StateMachine.SetOwner(this);
 
+		this.Animator = this.GetComponent<Animator>();
 		this.NavMeshAgent = this.GetComponent<NavMeshAgent>();
-		this.NavMeshAgent.isStopped = true;
 	}
 
 	/** 초기화 */
-	public override void Start() {
-		base.Start();
-		this.StateMachine.SetState(new CE15MonsterIdleState());
+	public virtual void Init() {
+		this.StateMachine.SetState(this.CreateIdleState());
+	}
+
+	/** 상태를 갱신한다 */
+	public override void Update() {
+		base.Update();
+		this.StateMachine.OnUpdate(Time.deltaTime);
 	}
 
 	/** 타격 되었을 경우 */
@@ -31,6 +50,15 @@ public class CE15Monster : CE15Interactable {
 		// Do Something
 	}
 	#endregion // 함수
+
+	#region 접근 함수
+#if UNITY_EDITOR
+	/** 현재 상태를 변경한다 */
+	public void SetCurState(string a_oState) {
+		m_oCurState = a_oState;
+	}
+#endif // #if UNITY_EDITOR
+	#endregion // 접근 함수
 
 	#region 팩토리 함수
 	/** 대기 상태를 생성한다 */
