@@ -15,6 +15,10 @@ public class CE15MonsterState : CE15State {
 
 	#region 함수
 	public override void OnStateEnter() {
+		this.Owner.Animator.SetBool("IsSurvive", true);
+
+		this.Owner.Animator.ResetTrigger("Die");
+		this.Owner.Animator.ResetTrigger("Hit");
 		this.Owner.Animator.ResetTrigger("Attack");
 
 #if UNITY_EDITOR
@@ -94,6 +98,9 @@ public class CE15MonsterAttackState : CE15MonsterState {
 		base.OnStateEnter();
 		this.Owner.NavMeshAgent.isStopped = true;
 
+		var oStateBehaviour = this.Owner.Animator.GetBehaviour<CE15MonsterAttackStateBehaviour>();
+		oStateBehaviour.Callback = this.HandleOnStateExit;
+
 		m_bIsEnableAttack = true;
 		m_fUpdateSkipTime = 0.0f;
 	}
@@ -107,6 +114,57 @@ public class CE15MonsterAttackState : CE15MonsterState {
 			m_bIsEnableAttack = false;
 			this.Owner.Animator.SetTrigger("Attack");
 		}
+	}
+
+	/** 상태를 종료를 처리한다 */
+	private void HandleOnStateExit(CE15MonsterAttackStateBehaviour a_oSender,
+		Animator a_oAnimator, AnimatorStateInfo a_stStateInfo, int a_nLayerIdx) {
+		// 타격 가능 상태 일 경우
+		if(!this.Owner.StatHandler.IsDie()) {
+			this.Owner.StateMachine.SetState(this.Owner.CreateIdleState());
+		}
+	}
+	#endregion // 함수
+}
+
+/** 몬스터 타격 상태 */
+public class CE15MonsterHitState : CE15MonsterState {
+	#region 함수
+	/** 상태가 시작 되었을 경우 */
+	public override void OnStateEnter() {
+		base.OnStateEnter();
+		this.Owner.Animator.SetTrigger("Hit");
+
+		this.Owner.NavMeshAgent.isStopped = true;
+
+		var oStateBehaviour = this.Owner.Animator.GetBehaviour<CE15MonsterStateBehaviour>();
+		oStateBehaviour.Callback = this.HandleOnStateExit;
+	}
+
+	/** 상태 종료를 처리한다 */
+	private void HandleOnStateExit(CE15MonsterStateBehaviour a_oSender,
+		Animator a_oAnimator, AnimatorStateInfo a_stStateInfo, int a_nLayerIdx) {
+		// 타격 가능 상태 일 경우
+		if(!this.Owner.StatHandler.IsDie() && a_stStateInfo.IsName("gothit")) {
+			this.Owner.StateMachine.SetState(this.Owner.CreateIdleState());
+		}
+	}
+	#endregion // 함수
+}
+
+/** 몬스터 죽음 상태 */
+public class CE15MonsterDieState : CE15MonsterState {
+	#region 함수
+	/** 상태가 시작 되었을 경우 */
+	public override void OnStateEnter() {
+		base.OnStateEnter();
+		this.Owner.NavMeshAgent.isStopped = true;
+
+		this.Owner.Animator.SetTrigger("Die");
+		this.Owner.Animator.SetBool("IsSurvive", false);
+
+		var oSceneManager = CSceneManager.GetSceneManager<CE15SceneManager>(KDefine.G_SCENE_N_E15);
+		oSceneManager.HandleOnDeathMonster();
 	}
 	#endregion // 함수
 }

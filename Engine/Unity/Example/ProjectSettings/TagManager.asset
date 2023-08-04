@@ -10,6 +10,7 @@ TagManager:
   - E08Target
   - E13Ground
   - E13Obstacle
+  - E15HitPoint
   layers:
   - Default
   - TransparentFX

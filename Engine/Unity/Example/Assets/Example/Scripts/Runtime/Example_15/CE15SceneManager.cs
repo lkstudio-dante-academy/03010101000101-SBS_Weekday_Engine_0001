@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.AI;
+using TMPro;
 
 /** Example 15 */
 public class CE15SceneManager : CSceneManager {
@@ -14,9 +16,17 @@ public class CE15SceneManager : CSceneManager {
 	}
 
 	#region 변수
+	private bool m_bIsDirtyUpdateUIsState = true;
+
+	private int m_nScore = 0;
 	private EState m_eState = EState.PLAY;
+
 	[SerializeField] private CE15Player m_oPlayer = null;
 
+	[Header("=====> UIs <=====")]
+	[SerializeField] private TMP_Text m_oScoreText = null;
+
+	[Header("=====> Game Objects <=====")]
 	[SerializeField] private GameObject m_oBulletRoot = null;
 	[SerializeField] private GameObject m_oOriginBullet = null;
 
@@ -52,10 +62,43 @@ public class CE15SceneManager : CSceneManager {
 	public override void Update() {
 		base.Update();
 
+		// 게임 종료 상태 일 경우
+		if(this.IsGameOver()) {
+			return;
+		}
+
+		// UI 상태 갱신이 필요 할 경우
+		if(m_bIsDirtyUpdateUIsState) {
+			this.UpdateUIsState();
+			m_bIsDirtyUpdateUIsState = false;
+		}
+
 		// 스페이스 키를 눌렀을 경우
 		if(Input.GetKeyDown(KeyCode.Space)) {
 			m_oPlayer.Fire(m_oOriginBullet, m_oBulletRoot);
 		}
+	}
+
+	/** 플레이어 사망 상태를 처리한다 */
+	public void HandleOnDeathPlayer() {
+		m_oPlayer.Update();
+
+		m_eState = EState.GAME_OVER;
+		CE15ResultStorage.Inst.Score = m_nScore;
+
+		CSceneLoader.Inst.LoadScene(KDefine.G_SCENE_N_E16,
+			UnityEngine.SceneManagement.LoadSceneMode.Additive);
+	}
+
+	/** 몬스터 사망 상태를 처리한다 */
+	public void HandleOnDeathMonster() {
+		m_nScore += 10;
+		m_bIsDirtyUpdateUIsState = true;
+	}
+
+	/** UI 상태를 갱신한다 */
+	private void UpdateUIsState() {
+		m_oScoreText.text = $"{m_nScore}";
 	}
 
 	/** 몬스터 생성을 시도한다 */
@@ -81,7 +124,14 @@ public class CE15SceneManager : CSceneManager {
 			oMonster.gameObject.SetActive(true);
 
 			yield return new WaitForSeconds(5.0f);
-		} while(m_eState != EState.GAME_OVER);
+		} while(!this.IsGameOver());
 	}
 	#endregion // 함수
+
+	#region 접근 함수
+	/** 게임 종료 여부를 검사한다 */
+	public bool IsGameOver() {
+		return m_eState == EState.GAME_OVER;
+	}
+	#endregion // 접근 함수
 }

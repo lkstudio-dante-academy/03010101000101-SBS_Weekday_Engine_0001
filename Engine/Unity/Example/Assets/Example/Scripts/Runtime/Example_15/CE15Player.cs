@@ -1,13 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /** 플레이어 */
-public class CE15Player : CComponent
-{
-    #region 변수
-    private Animation m_oAnimation = null;
+public class CE15Player : CComponent {
+	#region 변수
+	private bool m_bIsDirtyUpdateUIsState = true;
 
+	private Animation m_oAnimation = null;
+	private CE15StatHandler m_oStatHandler = null;
+
+	[Header("=====> UIs <=====")]
+	[SerializeField] private Image m_oGaugeImg = null;
+
+	[Header("=====> Game Objects <=====")]
 	[SerializeField] private GameObject m_oMuzzleFlash = null;
 	[SerializeField] private GameObject m_oBulletSpawnPos = null;
 	#endregion // 변수
@@ -19,10 +26,29 @@ public class CE15Player : CComponent
 
 		m_oAnimation = this.GetComponent<Animation>();
 		m_oMuzzleFlash.SetActive(false);
+
+		m_oStatHandler = this.gameObject.AddComponent<CE15StatHandler>();
+		m_oStatHandler.SetStat(EStatKinds.HP, 10);
+		m_oStatHandler.SetStat(EStatKinds.ATK, 1);
+		m_oStatHandler.SetStat(EStatKinds.MAX_HP, 10);
 	}
 
 	/** 상태를 갱신한다 */
 	public override void Update() {
+		base.Update();
+		var oSceneManager = CSceneManager.GetSceneManager<CE15SceneManager>(KDefine.G_SCENE_N_E15);
+
+		// 게임 종료 상태 일 경우
+		if(oSceneManager.IsGameOver()) {
+			return;
+		}
+
+		// UI 상태 갱신이 필요 할 경우
+		if(m_bIsDirtyUpdateUIsState) {
+			this.UpdateUIsState();
+			m_bIsDirtyUpdateUIsState = false;
+		}
+
 		/*
         Axis 계열 메서드는 입력 장치의 입력 여부에 따라 -1 ~ 1 범위 사이 값을
         반환한다. (즉, 아무런 입력도 없다면 0 을 반환하며 입력이 존재 할 경우
@@ -73,7 +99,33 @@ public class CE15Player : CComponent
 				m_oAnimation.CrossFade(fHorizontal.ExIsGreat(0.0f) ? "RunR" : "RunL", 0.15f);
 			}
 		}
-    }
+	}
+
+	/** 충돌이 시작 되었을 경우 */
+	public void OnTriggerEnter(Collider a_oCollider) {
+		var oMonster = a_oCollider.GetComponentInParent<CE15Monster>();
+		bool bIsHitPoint = a_oCollider.CompareTag("E15HitPoint");
+
+		// 타격 되었을 경우
+		if(bIsHitPoint && (oMonster != null && oMonster.IsAttack())) {
+			this.OnHit();
+		}
+	}
+
+	/** 타격 되었을 경우 */
+	private void OnHit() {
+		// 타격 가능 할 경우
+		if(!m_oStatHandler.IsDie()) {
+			m_oStatHandler.IncrStatVal(EStatKinds.HP, -1);
+			m_bIsDirtyUpdateUIsState = true;
+
+			// 사망했을 경우
+			if(m_oStatHandler.IsDie()) {
+				var oSceneManager = CSceneManager.GetSceneManager<CE15SceneManager>(KDefine.G_SCENE_N_E15);
+				oSceneManager.HandleOnDeathPlayer();
+			}
+		}
+	}
 
 	/** 총알을 발사한다 */
 	public void Fire(GameObject a_oOriginBullet, GameObject a_oBulletRoot) {
@@ -88,6 +140,13 @@ public class CE15Player : CComponent
 
 		var oRigidbody = oBullet.GetComponent<Rigidbody>();
 		oRigidbody.AddForce(this.transform.forward * 2500.0f, ForceMode.VelocityChange);
+	}
+
+	/** UI 상태를 갱신한다 */
+	private void UpdateUIsState() {
+		// 이미지를 갱신한다
+		m_oGaugeImg.fillAmount = m_oStatHandler.GetStatValPercent(EStatKinds.HP,
+			EStatKinds.MAX_HP);
 	}
 
 	/** 발사 효과를 시작한다 */
@@ -116,5 +175,5 @@ public class CE15Player : CComponent
 		oBullet.SetActive(true);
 		return oBullet.GetComponent<CE15Bullet>();
 	}
-    #endregion // 함수
+	#endregion // 함수
 }

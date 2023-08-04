@@ -1,18 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Tilemaps;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.AI;
+using Unity.VisualScripting;
 
 /** 몬스터 */
 public class CE15Monster : CE15Interactable {
 	#region 변수
+	private bool m_bIsDirtyUpdateUIsState = false;
+	private CE15StatHandler m_oStatHandler = null;
+
 	[SerializeField] private float m_fAttackRange = 0.0f;
 	[SerializeField] private float m_fTrackingRange = 0.0f;
 
 #if UNITY_EDITOR
 	[SerializeField] private string m_oCurState = string.Empty;
 #endif // #if UNITY_EDITOR
+
+	[Header("=====> UIs <=====")]
+	[SerializeField] private Image m_oGaugeImg = null;
+	[SerializeField] private GameObject m_oCanvas = null;
 	#endregion // 변수
 
 	#region 프로퍼티
@@ -22,6 +30,8 @@ public class CE15Monster : CE15Interactable {
 	public Animator Animator { get; private set; } = null;
 	public NavMeshAgent NavMeshAgent { get; private set; } = null;
 	public CE15StateMachine StateMachine { get; } = new CE15StateMachine();
+
+	public CE15StatHandler StatHandler => m_oStatHandler;
 	#endregion // 프로퍼티
 
 	#region 함수
@@ -32,26 +42,73 @@ public class CE15Monster : CE15Interactable {
 
 		this.Animator = this.GetComponent<Animator>();
 		this.NavMeshAgent = this.GetComponent<NavMeshAgent>();
+
+		m_oStatHandler = this.gameObject.AddComponent<CE15StatHandler>();
 	}
 
 	/** 초기화 */
 	public virtual void Init() {
+		// TODO: 테이블 기반으로 설정 필요
+		m_oStatHandler.SetStat(EStatKinds.HP, 3);
+		m_oStatHandler.SetStat(EStatKinds.ATK, 1);
+		m_oStatHandler.SetStat(EStatKinds.MAX_HP, 3);
+
+		m_bIsDirtyUpdateUIsState = true;
 		this.StateMachine.SetState(this.CreateIdleState());
 	}
 
 	/** 상태를 갱신한다 */
 	public override void Update() {
 		base.Update();
+		var oSceneManager = CSceneManager.GetSceneManager<CE15SceneManager>(KDefine.G_SCENE_N_E15);
+
+		// 게임 종료 상태 일 경우
+		if(oSceneManager.IsGameOver()) {
+			return;
+		}
+
 		this.StateMachine.OnUpdate(Time.deltaTime);
+
+		// UI 상태 갱신이 필요 할 경우
+		if(m_bIsDirtyUpdateUIsState) {
+			this.UpdateUIsState();
+			m_bIsDirtyUpdateUIsState = false;
+		}
 	}
 
 	/** 타격 되었을 경우 */
 	public override void OnHit() {
-		// Do Something
+		// 타격 가능 할 경우
+		if(!m_oStatHandler.IsDie()) {
+			m_oStatHandler.IncrStatVal(EStatKinds.HP, -1);
+			m_bIsDirtyUpdateUIsState = true;
+
+			// 사망했을 경우
+			if(m_oStatHandler.IsDie()) {
+				this.StateMachine.SetState(this.CreateDieState());
+			} else {
+				this.StateMachine.SetState(this.CreateHitState());
+			}
+		}
+	}
+
+	/** UI 상태를 갱신한다 */
+	private void UpdateUIsState() {
+		// 객체를 갱신한다
+		m_oCanvas.SetActive(!m_oStatHandler.IsDie());
+
+		// 이미지를 갱신한다
+		m_oGaugeImg.fillAmount = m_oStatHandler.GetStatValPercent(EStatKinds.HP,
+			EStatKinds.MAX_HP);
 	}
 	#endregion // 함수
 
 	#region 접근 함수
+	/** 공격 상태 여부를 검사한다 */
+	public bool IsAttack() {
+		return this.StateMachine.State is CE15MonsterAttackState;
+	}
+
 #if UNITY_EDITOR
 	/** 현재 상태를 변경한다 */
 	public void SetCurState(string a_oState) {
@@ -74,6 +131,16 @@ public class CE15Monster : CE15Interactable {
 	/** 공격 상태를 생성한다 */
 	public CE15MonsterAttackState CreateAttackState() {
 		return this.CreateState<CE15MonsterAttackState>();
+	}
+
+	/** 타격 상태를 생성한다 */
+	public CE15MonsterHitState CreateHitState() {
+		return this.CreateState<CE15MonsterHitState>();
+	}
+
+	/** 죽음 상태를 생성한다 */
+	public CE15MonsterDieState CreateDieState() {
+		return this.CreateState<CE15MonsterDieState>();
 	}
 
 	/** 상태를 생성한다 */
