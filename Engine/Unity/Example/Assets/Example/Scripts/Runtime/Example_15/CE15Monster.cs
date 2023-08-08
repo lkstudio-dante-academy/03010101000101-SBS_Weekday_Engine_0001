@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
-using Unity.VisualScripting;
 
 /** 몬스터 */
 public class CE15Monster : CE15Interactable {
@@ -48,10 +47,15 @@ public class CE15Monster : CE15Interactable {
 
 	/** 초기화 */
 	public virtual void Init() {
-		// TODO: 테이블 기반으로 설정 필요
-		m_oStatHandler.SetStat(EStatKinds.HP, 3);
-		m_oStatHandler.SetStat(EStatKinds.ATK, 1);
-		m_oStatHandler.SetStat(EStatKinds.MAX_HP, 3);
+		int nID = Random.Range(1, 3);
+		CE15DataTable.Inst.TryGetMonsterInfo(nID, out CMonsterInfo oMonsterInfo);
+
+		m_fAttackRange = (float)oMonsterInfo.m_nAttackRange;
+		m_fTrackingRange = (float)oMonsterInfo.m_nTrackingRange;
+
+		m_oStatHandler.SetStat(EStatKinds.HP, oMonsterInfo.m_nHP);
+		m_oStatHandler.SetStat(EStatKinds.ATK, oMonsterInfo.m_nATK);
+		m_oStatHandler.SetStat(EStatKinds.MAX_HP, oMonsterInfo.m_nHP);
 
 		m_bIsDirtyUpdateUIsState = true;
 		this.StateMachine.SetState(this.CreateIdleState());

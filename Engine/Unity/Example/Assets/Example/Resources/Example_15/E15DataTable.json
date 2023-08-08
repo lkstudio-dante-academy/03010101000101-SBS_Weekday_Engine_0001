@@ -1,0 +1,18 @@
+{
+    "Monster": [
+      {
+        "ID": "1",
+        "HP": "3",
+        "ATK": "1",
+        "AttackRange": "150",
+        "TrackingRange": "750"
+      },
+      {
+        "ID": "2",
+        "HP": "10",
+        "ATK": "3",
+        "AttackRange": "150",
+        "TrackingRange": "1250"
+      }
+    ]
+  }

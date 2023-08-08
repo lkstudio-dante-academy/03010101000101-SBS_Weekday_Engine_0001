@@ -47,6 +47,7 @@ public class CE15SceneManager : CSceneManager {
 	/** 초기화 */
 	public override void Awake() {
 		base.Awake();
+		CE15DataTable.Inst.LoadDataTable();
 
 		this.ObjsPoolManager = CFactory.CreateGameObj<CE15ObjsPoolManager>("ObjsPoolManager",
 			this.gameObject, Vector3.zero, Vector3.one, Vector3.zero);
