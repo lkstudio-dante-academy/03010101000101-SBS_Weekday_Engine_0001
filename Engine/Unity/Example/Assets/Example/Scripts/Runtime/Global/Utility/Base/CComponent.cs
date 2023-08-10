@@ -21,7 +21,37 @@ using UnityEngine;
  * - 클래스 이름과 해당 클래스가 구현 되어있는 파일 이름이 동일해야한다.
  */
 /** 최상단 컴포넌트 */
-public class CComponent : MonoBehaviour {
+public class CComponent : MonoBehaviour, IUpdatable {
+	#region 변수
+	private bool m_bIsDirtyUpdateState = true;
+	#endregion // 변수
+
+	#region 프로퍼티
+	public bool IsDestroy { get; private set; } = false;
+	#endregion // 프로퍼티
+
+	#region IUpdatable
+	/** 상태를 갱신한다 */
+	public virtual void OnUpdate(float a_fDeltaTime) {
+		// Do Something
+	}
+
+	/** 상태를 갱신한다 */
+	public virtual void OnLateUpdate(float a_fDeltaTime) {
+		// 상태 갱신이 필요 할 경우
+		if(m_bIsDirtyUpdateState) {
+			this.UpdateState();
+			m_bIsDirtyUpdateState = false;
+		}
+	}
+
+	/** 상태를 갱신한다 */
+	public virtual void OnFixedUpdate(float a_fDeltaTime) {
+		// Do Something
+	}
+	#endregion // IUpdatable
+
+	#region 함수
 	/*
 	 * Awake vs Start 메서드
 	 * - Awake 와 Start 메서드 모두 특정 객체를 초기화 시키는 용도로 사용된다.
@@ -79,7 +109,7 @@ public class CComponent : MonoBehaviour {
 	 */
 	/** 제거 되었을 경우 */
 	public virtual void OnDestroy() {
-		// Do Something
+		this.IsDestroy = true;
 	}
 	
 	/*
@@ -93,4 +123,30 @@ public class CComponent : MonoBehaviour {
 	public virtual void Update() {
 		// Do Something
 	}
+
+	/** 상태를 갱신한다 */
+	public virtual void LateUpdate() {
+		// Do Something
+	}
+
+	/** 상태를 갱신한다 */
+	public virtual void FixedUpdate() {
+		// Do Something
+	}
+
+	/** 상태를 갱신한다 */
+	protected virtual void UpdateState() {
+		// Do Something
+	}
+	#endregion // 함수
+
+	#region 접근 함수
+	/** 상태 갱신 여부를 변경한다 */
+	public void SetIsDirtyUpdateState(bool a_bIsDirty) {
+		// 상태 갱신이 필요 할 경우
+		if(!m_bIsDirtyUpdateState) {
+			m_bIsDirtyUpdateState = a_bIsDirty;
+		}
+	}
+	#endregion // 접근 함수
 }
