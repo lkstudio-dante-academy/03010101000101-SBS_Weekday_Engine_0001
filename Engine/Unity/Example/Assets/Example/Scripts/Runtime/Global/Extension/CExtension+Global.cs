@@ -67,5 +67,21 @@ public static partial class CExtension {
 		a_oSender.sortingOrder = a_nOrder;
 		a_oSender.sortingLayerID = SortingLayer.NameToID(a_oLayer);
 	}
+
+	/** 값을 탐색한다 */
+	public static (K, bool) ExFindVal<K, V>(this Dictionary<K, V> a_oSender,
+		System.Predicate<V> a_oCompare)
+    {
+		foreach (var stKeyVal in a_oSender)
+		{
+			// 값이 존재 할 경우
+			if(a_oCompare(stKeyVal.Value))
+            {
+				return (stKeyVal.Key, true);
+            }
+        }
+
+		return (default, false);
+    }
 	#endregion // 클래스 함수
 }

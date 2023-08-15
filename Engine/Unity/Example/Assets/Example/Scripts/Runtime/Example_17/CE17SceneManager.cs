@@ -25,6 +25,19 @@ public class CE17SceneManager : CSceneManager {
 		m_oTimeText.text = $"{a_fDeltaTime}";
 	}
 
+	/** 타이머 추가 버튼을 눌렀을 경우 */
+	public void OnTouchAddTimerBtn()
+	{
+		CScheduleManager.Inst.AddTimer("Timer",
+			5, 1.0f, this.OnReceiveTimerEvent);
+	}
+
+	/** 타이머 제거 버튼을 눌렀을 경우 */
+	public void OnTouchRemoveTimerBtn()
+    {
+		CScheduleManager.Inst.RemoveTimer("Timer");
+	}
+
 	/** 컴포넌트 추가 버튼을 눌렀을 경우 */
 	public void OnTouchAddComponentBtn() {
 		CScheduleManager.Inst.AddComponent(this);
@@ -34,5 +47,11 @@ public class CE17SceneManager : CSceneManager {
 	public void OnTouchRemoveComponentBtn() {
 		CScheduleManager.Inst.RemoveComponent(this);
 	}
+
+	/** 타이머 이벤트를 수신했을 경우 */
+	private void OnReceiveTimerEvent(CTimer a_oSender)
+    {
+		Debug.Log($"OnReceiveTimerEvent : {a_oSender.GetInstanceID()}");
+    }
 	#endregion // 함수
 }

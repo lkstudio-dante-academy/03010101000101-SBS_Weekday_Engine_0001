@@ -27,6 +27,7 @@ public class CTimer : CComponent {
 	/** 초기화 */
 	public virtual void Init(STParams a_stParams) {
 		this.Params = a_stParams;
+		CScheduleManager.Inst.AddComponent(this);
 	}
 
 	/** 상태를 갱신한다 */

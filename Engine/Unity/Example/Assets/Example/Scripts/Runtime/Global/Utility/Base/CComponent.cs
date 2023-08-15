@@ -28,6 +28,7 @@ public class CComponent : MonoBehaviour, IUpdatable {
 
 	#region 프로퍼티
 	public bool IsDestroy { get; private set; } = false;
+	public System.Action<CComponent> DestroyCallback { get; private set; } = null;
 	#endregion // 프로퍼티
 
 	#region IUpdatable
@@ -110,6 +111,7 @@ public class CComponent : MonoBehaviour, IUpdatable {
 	/** 제거 되었을 경우 */
 	public virtual void OnDestroy() {
 		this.IsDestroy = true;
+		this.DestroyCallback?.Invoke(this);
 	}
 	
 	/*
@@ -138,6 +140,19 @@ public class CComponent : MonoBehaviour, IUpdatable {
 	protected virtual void UpdateState() {
 		// Do Something
 	}
+
+	/** 제거 수신자를 추가한다 */
+	public void AddDestroyListener(System.Action<CComponent> a_oListener)
+    {
+		// 수신자가 없을 경우
+		if(this.DestroyCallback == null)
+        {
+			this.DestroyCallback = a_oListener;
+        } else
+        {
+			this.DestroyCallback += a_oListener;
+        }
+    }
 	#endregion // 함수
 
 	#region 접근 함수

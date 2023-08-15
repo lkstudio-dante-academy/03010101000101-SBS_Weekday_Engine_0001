@@ -222,7 +222,7 @@ RectTransform:
   m_Children:
   - {fileID: 1234285256}
   m_Father: {fileID: 1894112906}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -272,7 +272,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 290929210}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 830733107}
+        m_TargetAssemblyTypeName: CE17SceneManager, Assembly-CSharp
+        m_MethodName: OnTouchRemoveTimerBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &290929210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -413,7 +425,7 @@ RectTransform:
   m_Children:
   - {fileID: 742510564}
   m_Father: {fileID: 1894112906}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -463,7 +475,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 365949407}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 830733107}
+        m_TargetAssemblyTypeName: CE17SceneManager, Assembly-CSharp
+        m_MethodName: OnTouchAddTimerBtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &365949407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -856,7 +880,7 @@ RectTransform:
   m_Children:
   - {fileID: 1272531859}
   m_Father: {fileID: 1894112906}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1589,10 +1613,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 916842391}
-  - {fileID: 2040684733}
   - {fileID: 365949405}
   - {fileID: 290929208}
+  - {fileID: 916842391}
+  - {fileID: 2040684733}
   m_Father: {fileID: 339524536}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1674,7 +1698,7 @@ RectTransform:
   m_Children:
   - {fileID: 1359773225}
   m_Father: {fileID: 1894112906}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
