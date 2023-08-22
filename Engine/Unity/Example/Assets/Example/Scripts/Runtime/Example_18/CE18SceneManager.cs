@@ -1,12 +1,15 @@
 //#define E18_THREAD
-#define E18_NETWORK_01
+//#define E18_NETWORK_01
+#define E18_NETWORK_02
 
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
+using UnityEngine.UI;
 
 /*
  * 쓰레드란?
@@ -20,6 +23,14 @@ using UnityEngine;
  */
 /** Example 18 */
 public partial class CE18SceneManager : CSceneManager {
+	#region 변수
+	[Header("=====> 네트워크 Part 2 <=====")]
+	[SerializeField] private InputField m_oInput = null;
+
+	[SerializeField] private GameObject m_oOriginText = null;
+	[SerializeField] private GameObject m_oScrollViewContents = null;
+	#endregion // 변수
+
 	#region 프로퍼티
 	public override string SceneName => KDefine.G_SCENE_N_E18;
 	#endregion // 프로퍼티
@@ -70,6 +81,23 @@ public partial class CE18SceneManager : CSceneManager {
 
 	/** 서버 메인 메서드 */
 	private void ServerMain() {
+		/*
+		 * lock 키워드는 쓰레드 간에 동일한 메모리를 수정 할 때 발생하는
+		 * 데이터 레이싱 현상을 방지하는 역할을 수행한다. (즉, 쓰레드는
+		 * 동작 중에 언제라도 다른 쓰레드에게 CPU 사용 권한이 넘어 갈 수
+		 * 있기 때문에 쓰레드가 공유하는 메모리에 접근 할 경우에는 반드시
+		 * 동기화 처리를 해줘야한다는 것을 알 수 있다.)
+		 * 
+		 * 단, 동기화 처리 시 사용 되는 공유 자원은 사용이 완료 되었을 경우
+		 * 반드시 다시 소유 권한을 반납해야한다.
+		 * 
+		 * 만약, 특정 쓰레드가 공유 자원을 소유한 후 해당 자원을 반환하지
+		 * 않을 경우 다른 쓰레드가 자원을 무한정 기다리는 데드락 현상에
+		 * 빠질 수 있다.
+		 * 
+		 * 따라서, lock 키워드를 활용하면 공유 자원을 가져온 후 lock 키워드로
+		 * 선언 영역을 벗어 날 경우 자동으로 자원이 반납된다는 것을 알 수 있다.
+		 */
 		lock(m_oKey) {
 			for(int i = 0; i < 1000000; ++i) {
 				m_nCount += 1;
@@ -114,8 +142,236 @@ public partial class CE18SceneManager : CSceneManager {
 #elif E18_NETWORK_01
 /** Example 18 - 네트워크 Part 1 */
 public partial class CE18SceneManager : CSceneManager {
-	#region 변수
+#region 변수
+	private Thread m_oServerThread = null;
+	private Thread m_oClientThread = null;
+#endregion // 변수
 
+#region 함수
+	/** 초기화 */
+	public override void Start() {
+		base.Start();
+
+		m_oServerThread = new Thread(this.ServerMain);
+		m_oClientThread = new Thread(this.ClientMain);
+
+		m_oServerThread.Start();
+		m_oClientThread.Start();
+	}
+
+	/** 제거 되었을 경우 */
+	public override void OnDestroy() {
+		base.OnDestroy();
+
+		m_oServerThread.Abort();
+		m_oClientThread.Abort();
+	}
+
+	/** 서버 메인 */
+	private void ServerMain() {
+		var oServerSocket = new Socket(AddressFamily.InterNetwork,
+			SocketType.Stream, ProtocolType.Tcp);
+
+		oServerSocket.Bind(new IPEndPoint(IPAddress.Any, 9080));
+		oServerSocket.Listen(byte.MaxValue);
+
+		var oSocket = oServerSocket.Accept();
+		var oBuffer = new byte[short.MaxValue];
+
+		do {
+			int nNumBytes = oSocket.Receive(oBuffer, oBuffer.Length, SocketFlags.None);
+
+			// 연결이 종료 되었을 경우
+			if(nNumBytes <= 0) {
+				oSocket.Close();
+				break;
+			}
+
+			string oMsg = System.Text.Encoding.Default.GetString(oBuffer,
+				0, nNumBytes);
+
+			UnityEngine.Debug.Log($"서버 수신 메세지 : {oMsg}");
+			oSocket.Send(oBuffer, nNumBytes, SocketFlags.None);
+		} while(true);
+
+		oServerSocket.Close();
+	}
+
+	/** 클라이언트 메인 */
+	private void ClientMain() {
+		var oSocket = new Socket(AddressFamily.InterNetwork,
+			SocketType.Stream, ProtocolType.Tcp);
+
+		oSocket.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9080));
+
+		// 연결 되었을 경우
+		if(oSocket.Connected) {
+			string oMsg = "Hello, World!";
+			oSocket.Send(System.Text.Encoding.Default.GetBytes(oMsg), SocketFlags.None);
+
+			var oBuffer = new byte[short.MaxValue];
+			int nNumBytes = oSocket.Receive(oBuffer, oBuffer.Length, SocketFlags.None);
+
+			oMsg = System.Text.Encoding.Default.GetString(oBuffer, 0, nNumBytes);
+			UnityEngine.Debug.Log($"클라이언트 수신 메세지 : {oMsg}");
+
+			oSocket.Shutdown(SocketShutdown.Both);
+			oSocket.Close();
+		}
+	}
+#endregion // 함수
+}
+#elif E18_NETWORK_02
+/** Example 18 - 네트워크 Part 2 */
+public partial class CE18SceneManager : CSceneManager {
+	#region 변수
+	private Thread m_oServerThread = null;
+	private Thread m_oClientThread = null;
+
+	private List<Socket> m_oClientList = new List<Socket>();
+	private Queue<string> m_oSendMsgQueue = new Queue<string>();
+	private Queue<string> m_oReceiveMsgQueue = new Queue<string>();
 	#endregion // 변수
+
+	#region 함수
+	/** 초기화 */
+	public override void Start() {
+		base.Start();
+		StartCoroutine(this.TryReceiveMsg());
+
+		m_oServerThread = new Thread(this.ServerMain);
+		m_oClientThread = new Thread(this.ClientMain);
+
+		m_oServerThread.Start();
+		m_oClientThread.Start();
+
+		// 입력 필드를 설정한다
+		m_oInput.onEndEdit.AddListener(this.OnEndInputText);
+	}
+
+	/** 제거 되었을 경우 */
+	public override void OnDestroy() {
+		base.OnDestroy();
+
+		m_oServerThread.Abort();
+		m_oClientThread.Abort();
+	}
+
+	/** 전송 버튼을 눌렀을 경우 */
+	public void OnTouchSendBtn() {
+		// 텍스트가 존재 할 경우
+		if(m_oInput.text.Length >= 1) {
+			m_oSendMsgQueue.Enqueue(m_oInput.text);
+			m_oInput.SetTextWithoutNotify(string.Empty);
+		}
+	}
+
+	/** 텍스트 입력을 종료했을 경우 */
+	private void OnEndInputText(string a_oStr) {
+		// 전송 키를 눌렀을 경우
+		if(Input.GetKeyDown(KeyCode.Return)) {
+			this.OnTouchSendBtn();
+		}
+	}
+
+	/** 메세지 수신을 시도한다 */
+	private IEnumerator TryReceiveMsg() {
+		do {
+			int nTimes = 0;
+			yield return new WaitForSeconds(0.1f);
+
+			while(nTimes < 10 && m_oReceiveMsgQueue.Count >= 1) {
+				nTimes += 1;
+				string oMsg = m_oReceiveMsgQueue.Dequeue();
+
+				// 텍스트를 설정한다 {
+				var oText = CFactory.CreateCloneGameObj<Text>("Text",
+					m_oOriginText, m_oScrollViewContents, Vector3.zero, Vector3.one, Vector3.zero);
+
+				oText.text = oMsg;
+				// 텍스트를 설정한다 }
+			}
+
+			var oLayoutGroup = m_oScrollViewContents.GetComponent<LayoutGroup>();
+			LayoutRebuilder.MarkLayoutForRebuild(oLayoutGroup.transform as RectTransform);
+		} while(true);
+	}
+
+	/** 서버 메인 */
+	private void ServerMain() {
+#if UNITY_EDITOR
+		var oServerSocket = new Socket(AddressFamily.InterNetwork,
+			SocketType.Stream, ProtocolType.Tcp);
+
+		oServerSocket.Bind(new IPEndPoint(IPAddress.Any, 9080));
+		oServerSocket.Listen(byte.MaxValue);
+
+		var oSocket = oServerSocket.Accept();
+
+		// 연결 되었을 경우
+		if(oSocket.Connected) {
+			m_oClientList.Add(oSocket);
+			var oBuffer = new byte[short.MaxValue];
+
+			var oArgs = new SocketAsyncEventArgs();
+			oArgs.Completed += this.OnReceiveClientData;
+			oArgs.SetBuffer(oBuffer);
+
+			oSocket.ReceiveAsync(oArgs);
+		}
+
+		oServerSocket.Close();
+#endif // #if UNITY_EDITOR
+	}
+
+	/** 클라이언트 데이터를 수신했을 경우 */
+	private void OnReceiveClientData(object a_oSender, SocketAsyncEventArgs a_oArgs) {
+		for(int i = 0; i < m_oClientList.Count; ++i) {
+			m_oClientList[i].Send(a_oArgs.Buffer, a_oArgs.BytesTransferred, SocketFlags.None);
+		}
+
+		string oMsg = System.Text.Encoding.Default.GetString(a_oArgs.Buffer, 0, a_oArgs.BytesTransferred);
+		UnityEngine.Debug.Log($"###########: {oMsg}");
+
+		(a_oSender as Socket).ReceiveAsync(a_oArgs);
+	}
+
+	/** 클라이언트 메인 */
+	private void ClientMain() {
+		var oSocket = new Socket(AddressFamily.InterNetwork,
+			SocketType.Stream, ProtocolType.Tcp);
+
+		oSocket.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9080));
+
+		// 연결 되었을 경우
+		if(oSocket.Connected) {
+			var oBuffer = new byte[short.MaxValue];
+
+			var oArgs = new SocketAsyncEventArgs();
+			oArgs.Completed += this.OnReceiveServerData;
+			oArgs.SetBuffer(oBuffer);
+
+			oSocket.ReceiveAsync(oArgs);
+
+			do {
+				// 전송 메세지가 존재 할 경우
+				if(m_oSendMsgQueue.Count >= 1) {
+					string oMsg = m_oSendMsgQueue.Dequeue();
+					var oBytes = System.Text.Encoding.Default.GetBytes(oMsg);
+
+					oSocket.Send(oBytes, oBytes.Length, SocketFlags.None);
+				}
+			} while(true);
+		}
+	}
+
+	/** 서버 데이터를 수신했을 경우 */
+	private void OnReceiveServerData(object a_oSender, SocketAsyncEventArgs a_oArgs) {
+		string oMsg = System.Text.Encoding.Default.GetString(a_oArgs.Buffer, 0, a_oArgs.BytesTransferred);
+		m_oReceiveMsgQueue.Enqueue(oMsg);
+
+		(a_oSender as Socket).ReceiveAsync(a_oArgs);
+	}
+	#endregion // 함수
 }
 #endif // #if E18_THREAD
