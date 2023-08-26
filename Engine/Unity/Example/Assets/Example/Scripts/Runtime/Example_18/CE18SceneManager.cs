@@ -306,34 +306,47 @@ public partial class CE18SceneManager : CSceneManager {
 		oServerSocket.Bind(new IPEndPoint(IPAddress.Any, 9080));
 		oServerSocket.Listen(byte.MaxValue);
 
-		var oSocket = oServerSocket.Accept();
+		do {
+			var oSocket = oServerSocket.Accept();
 
-		// 연결 되었을 경우
-		if(oSocket.Connected) {
-			m_oClientList.Add(oSocket);
-			var oBuffer = new byte[short.MaxValue];
+			// 연결 되었을 경우
+			if(oSocket.Connected) {
+				m_oClientList.Add(oSocket);
+				this.TryReceiveClientMsg(oSocket);
 
-			var oArgs = new SocketAsyncEventArgs();
-			oArgs.Completed += this.OnReceiveClientData;
-			oArgs.SetBuffer(oBuffer);
+				var oEndPoint = oSocket.RemoteEndPoint as IPEndPoint;
+				string oWelcomMsg = $"[{oEndPoint.Port}] 입장했습니다.";
 
-			oSocket.ReceiveAsync(oArgs);
-		}
+				var oBytes = System.Text.Encoding.Default.GetBytes(oWelcomMsg);
+
+				for(int i = 0; i < m_oClientList.Count; ++i) {
+					m_oClientList[i].Send(oBytes, oBytes.Length, SocketFlags.None);
+				}
+			}
+		} while(m_oClientList.Count >= 1);
 
 		oServerSocket.Close();
 #endif // #if UNITY_EDITOR
 	}
 
-	/** 클라이언트 데이터를 수신했을 경우 */
-	private void OnReceiveClientData(object a_oSender, SocketAsyncEventArgs a_oArgs) {
-		for(int i = 0; i < m_oClientList.Count; ++i) {
-			m_oClientList[i].Send(a_oArgs.Buffer, a_oArgs.BytesTransferred, SocketFlags.None);
+	/** 클라이언트 메세지 수신을 시도한다 */
+	private async void TryReceiveClientMsg(Socket a_oSocket) {
+		var oBuffer = new byte[short.MaxValue];
+		var oTask = a_oSocket.ReceiveAsync(oBuffer, SocketFlags.None);
+
+		await oTask;
+		int nBytes = oTask.Result;
+
+		// 연결이 종료 되었을 경우
+		if(nBytes <= 0) {
+			a_oSocket.Close();
+		} else {
+			for(int i = 0; i < m_oClientList.Count; ++i) {
+				m_oClientList[i].Send(oBuffer, nBytes, SocketFlags.None);
+			}
+
+			this.TryReceiveClientMsg(a_oSocket);
 		}
-
-		string oMsg = System.Text.Encoding.Default.GetString(a_oArgs.Buffer, 0, a_oArgs.BytesTransferred);
-		UnityEngine.Debug.Log($"###########: {oMsg}");
-
-		(a_oSender as Socket).ReceiveAsync(a_oArgs);
 	}
 
 	/** 클라이언트 메인 */
@@ -345,13 +358,7 @@ public partial class CE18SceneManager : CSceneManager {
 
 		// 연결 되었을 경우
 		if(oSocket.Connected) {
-			var oBuffer = new byte[short.MaxValue];
-
-			var oArgs = new SocketAsyncEventArgs();
-			oArgs.Completed += this.OnReceiveServerData;
-			oArgs.SetBuffer(oBuffer);
-
-			oSocket.ReceiveAsync(oArgs);
+			this.TryReceiveServerMsg(oSocket);
 
 			do {
 				// 전송 메세지가 존재 할 경우
@@ -365,12 +372,18 @@ public partial class CE18SceneManager : CSceneManager {
 		}
 	}
 
-	/** 서버 데이터를 수신했을 경우 */
-	private void OnReceiveServerData(object a_oSender, SocketAsyncEventArgs a_oArgs) {
-		string oMsg = System.Text.Encoding.Default.GetString(a_oArgs.Buffer, 0, a_oArgs.BytesTransferred);
-		m_oReceiveMsgQueue.Enqueue(oMsg);
+	/** 서버 메세지 수신을 시도한다 */
+	private async void TryReceiveServerMsg(Socket a_oSocket) {
+		var oBuffer = new byte[short.MaxValue];
+		var oTask = a_oSocket.ReceiveAsync(oBuffer, SocketFlags.None);
 
-		(a_oSender as Socket).ReceiveAsync(a_oArgs);
+		await oTask;
+
+		int nNumBytes = oTask.Result;
+		string oMsg = System.Text.Encoding.Default.GetString(oBuffer, 0, nNumBytes);
+
+		m_oReceiveMsgQueue.Enqueue(oMsg);
+		this.TryReceiveServerMsg(a_oSocket);
 	}
 	#endregion // 함수
 }
