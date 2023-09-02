@@ -50,3 +50,12 @@ public static partial class KDefine {
 	public const string G_SCENE_N_E21 = "Example_21 (틱택토 - 결과)";
 	#endregion // 기본
 }
+
+/** Example 20 상수 */
+public static partial class KDefine {
+	#region 기본
+	// 단위
+	public const float E20_CELL_WIDTH = 200.0f;
+	public const float E20_CELL_HEIGHT = KDefine.E20_CELL_WIDTH;
+	#endregion // 기본
+}

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using TMPro;
 
 /** 전역 확장 메서드 */
@@ -43,6 +44,28 @@ public static partial class CExtension {
 		GameObject a_oParent, bool a_bIsCoord = true) {
 		var stVec4 = new Vector4(a_stSender.x, a_stSender.y, a_stSender.z, a_bIsCoord ? 1.0f : 0.0f);
 		return a_oParent.transform.localToWorldMatrix * stVec4;
+	}
+
+	/** 월드 위치를 반환한다 */
+	public static Vector3 ExGetWorldPos(this PointerEventData a_oSender) {
+		float fNormPosX = (a_oSender.position.x * 2.0f) / CAccess.ScreenWidth - 1.0f;
+		float fNormPosY = (a_oSender.position.y * 2.0f) / CAccess.ScreenHeight - 1.0f;
+
+		float fAspect = CAccess.ScreenWidth / CAccess.ScreenHeight;
+		float fDesignWidth = KDefine.G_DESIGN_HEIGHT * fAspect;
+
+		float fScreenHalfWidth = fDesignWidth / 2.0f;
+		float fScreenHalfHeight = KDefine.G_DESIGN_HEIGHT / 2.0f;
+
+		return new Vector3(fNormPosX * fScreenHalfWidth,
+			fNormPosY * fScreenHalfHeight, 0.0f);
+	}
+
+	/** 로컬 위치를 반환한다 */
+	public static Vector3 ExGetLocalPos(this PointerEventData a_oSender,
+		GameObject a_oParent) {
+		var stWorldPos = a_oSender.ExGetWorldPos();
+		return stWorldPos.ExToLocal(a_oParent);
 	}
 
 	/** 정렬 순서를 변경한다 */

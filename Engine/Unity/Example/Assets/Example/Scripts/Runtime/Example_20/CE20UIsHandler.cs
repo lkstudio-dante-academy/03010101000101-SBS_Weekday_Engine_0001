@@ -5,8 +5,15 @@ using UnityEngine;
 /** UI 처리자 */
 public class CE20UIsHandler : CComponent {
 	/** 매개 변수 */
-	public struct STParams {
-		public CE20SceneManager m_oSceneManager;
+	public record STParams {
+		public CE20SceneManager m_oSceneManager = null;
+
+		#region 함수
+		/** 생성자 */
+		public STParams(CE20SceneManager a_oSceneManager) {
+			m_oSceneManager = a_oSceneManager;
+		}
+		#endregion // 함수
 	}
 
 	#region 프로퍼티
@@ -23,9 +30,7 @@ public class CE20UIsHandler : CComponent {
 	#region 클래스 팩토리 함수
 	/** 매개 변수를 생성한다 */
 	public static STParams MakeParams(CE20SceneManager a_oSceneManager) {
-		return new STParams() {
-			m_oSceneManager = a_oSceneManager
-		};
+		return new STParams(a_oSceneManager);
 	}
 	#endregion // 클래스 팩토리 함수
 }

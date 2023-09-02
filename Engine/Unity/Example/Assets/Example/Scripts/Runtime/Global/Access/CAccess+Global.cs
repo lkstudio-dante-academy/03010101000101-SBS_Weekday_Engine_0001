@@ -34,11 +34,15 @@ public static partial class CAccess {
 	#endregion // 클래스 프로퍼티
 
 	#region 클래스 함수
+	/** 해상도 너비를 반환한다 */
+	public static float GetResolutionWidth(Vector3 a_stDesignSize) {
+		float fAspect = a_stDesignSize.x / a_stDesignSize.y;
+		return ScreenHeight * fAspect;
+	}
+
 	/** 해상도 비율을 반환한다 */
 	public static float GetResolutionScale(Vector3 a_stDesignSize) {
-		float fAspect = a_stDesignSize.x / a_stDesignSize.y;
-		float fScreenWidth = ScreenHeight * fAspect;
-
+		float fScreenWidth = CAccess.GetResolutionWidth(a_stDesignSize);
 		return fScreenWidth.ExIsLessEquals(ScreenWidth) ? 1.0f : ScreenWidth / fScreenWidth;
 	}
 	#endregion // 클래스 함수

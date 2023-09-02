@@ -14,8 +14,13 @@ public class CE20MatchingUIsHandler : CE20UIsHandler {
 	}
 
 	/** 매개 변수 */
-	public new struct STParams {
-		public CE20UIsHandler.STParams m_stBaseParams;
+	public new record STParams : CE20UIsHandler.STParams {
+		#region 함수
+		/** 생성자 */
+		public STParams(CE20SceneManager a_oSceneManager) : base(a_oSceneManager) {
+			// Do Something
+		}
+		#endregion // 함수
 	}
 
 	#region 변수
@@ -32,13 +37,28 @@ public class CE20MatchingUIsHandler : CE20UIsHandler {
 	#region 함수
 	/** 초기화 */
 	public virtual void Init(STParams a_stParams) {
-		base.Init(a_stParams.m_stBaseParams);
+		base.Init(a_stParams);
 		this.Params = a_stParams;
 	}
 
 	/** 매칭 버튼을 눌렀을 경우 */
-	public void OnTouchMachingBtn() {
-		// Do Something
+	public void OnTouchMatchingBtn() {
+		// 대기 상태 일 경우
+		if(m_eState == EState.WAIT) {
+			m_eState = EState.MATCHING;
+			CE20NetworkManager.Inst.SendMatchingRequest(this.OnRecieveMatchingResponse);
+		}
+	}
+
+	/** 매칭 응답을 수신했을 경우 */
+	private void OnRecieveMatchingResponse(CE20NetworkManager a_oSender, bool a_bIsSuccess) {
+		m_eState = EState.WAIT;
+
+		// 매칭에 성공했을 경우
+		if(a_bIsSuccess) {
+			var oSceneManager = CSceneManager.GetSceneManager<CE20SceneManager>(KDefine.G_SCENE_N_E20);
+			oSceneManager.OnMatchingSuccess();
+		}
 	}
 
 	/** 상태를 갱신한다 */
@@ -56,9 +76,7 @@ public class CE20MatchingUIsHandler : CE20UIsHandler {
 	#region 클래스 팩토리 함수
 	/** 매개 변수를 생성한다 */
 	public new static STParams MakeParams(CE20SceneManager a_oSceneManager) {
-		return new STParams() {
-			m_stBaseParams = CE20UIsHandler.MakeParams(a_oSceneManager)
-		};
+		return new STParams(a_oSceneManager);
 	}
 	#endregion // 클래스 팩토리 함수
 }
