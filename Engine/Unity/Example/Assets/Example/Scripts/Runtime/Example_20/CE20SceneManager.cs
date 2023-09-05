@@ -63,13 +63,21 @@ public class CE20SceneManager : CSceneManager {
 
 		// 엔진을 설정한다
 		m_oEngine = this.GetComponentInChildren<CE20Engine>();
-		m_oEngine.Init(CE20Engine.MakeParams(this));
+
+		// UI 처리자를 설정한다
+		m_oPlayUIsHandler = this.GetComponentInChildren<CE20PlayUIsHandler>();
+		m_oMatchingUIsHandler = this.GetComponentInChildren<CE20MatchingUIsHandler>();
+	}
+
+	/** 초기화 */
+	public override void Start() {
+		base.Start();
+
+		// 엔진을 설정한다
+		m_oEngine.Init(CE20Engine.MakeParams(m_oPlayUIsInfo.m_oObjs, this, m_oPlayUIsHandler as CE20PlayUIsHandler));
 
 		// UI 처리자를 설정한다 {
 		var stGridSize = new Vector2Int(3, 3);
-
-		m_oPlayUIsHandler = this.GetComponentInChildren<CE20PlayUIsHandler>();
-		m_oMatchingUIsHandler = this.GetComponentInChildren<CE20MatchingUIsHandler>();
 
 		(m_oPlayUIsHandler as CE20PlayUIsHandler).Init(CE20PlayUIsHandler.MakeParams(this, stGridSize));
 		(m_oMatchingUIsHandler as CE20MatchingUIsHandler).Init(CE20MatchingUIsHandler.MakeParams(this));
