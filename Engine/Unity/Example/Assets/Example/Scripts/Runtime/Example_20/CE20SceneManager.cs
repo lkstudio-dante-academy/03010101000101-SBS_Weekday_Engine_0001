@@ -53,6 +53,7 @@ public class CE20SceneManager : CSceneManager {
 
 	#region 프로퍼티
 	public override string SceneName => KDefine.G_SCENE_N_E20;
+	public CE20Engine Engine => m_oEngine;
 	#endregion // 프로퍼티
 
 	#region 함수
@@ -72,6 +73,7 @@ public class CE20SceneManager : CSceneManager {
 	/** 초기화 */
 	public override void Start() {
 		base.Start();
+		this.SetIsDirtyUpdateState(true);
 
 		// 엔진을 설정한다
 		m_oEngine.Init(CE20Engine.MakeParams(m_oPlayUIsInfo.m_oObjs, this, m_oPlayUIsHandler as CE20PlayUIsHandler));
@@ -93,6 +95,15 @@ public class CE20SceneManager : CSceneManager {
 		m_oMatchingUIsHandler.OnUpdate(a_fDeltaTime);
 	}
 
+	/** 상태를 갱신한다 */
+	public override void OnLateUpdate(float a_fDeltaTime) {
+		base.OnLateUpdate(a_fDeltaTime);
+
+		// UI 처리자를 갱신한다
+		m_oPlayUIsHandler.OnLateUpdate(a_fDeltaTime);
+		m_oMatchingUIsHandler.OnLateUpdate(a_fDeltaTime);
+	}
+
 	/** 매칭에 성공했을 경우 */
 	public void OnMatchingSuccess() {
 		m_eState = EState.PLAY;
@@ -112,6 +123,9 @@ public class CE20SceneManager : CSceneManager {
 		m_oMatchingUIsInfo.m_oUIs.SetActive(m_eState == EState.Matching);
 		m_oMatchingUIsInfo.m_oObjs.SetActive(m_eState == EState.Matching);
 		// 객체를 갱신한다 }
+
+		m_oPlayUIsHandler.SetIsDirtyUpdateState(true);
+		m_oMatchingUIsHandler.SetIsDirtyUpdateState(true);
 	}
 	#endregion // 함수
 }

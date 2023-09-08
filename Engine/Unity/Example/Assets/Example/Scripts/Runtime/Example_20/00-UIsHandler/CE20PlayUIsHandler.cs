@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 /** 플레이 UI 처리자 */
 public class CE20PlayUIsHandler : CE20UIsHandler {
@@ -17,9 +18,13 @@ public class CE20PlayUIsHandler : CE20UIsHandler {
 	}
 
 	#region 변수
+	[SerializeField] private GameObject m_oTextRoot = null;
+	[SerializeField] private GameObject m_oOriginText = null;
+
 	[SerializeField] private GameObject m_oGridLineRoot = null;
 	[SerializeField] private GameObject m_oOriginGridLine = null;
 
+	private TMP_Text[,] m_oTexts = null;
 	private List<GameObject> m_oGridLineList = new List<GameObject>();
 	#endregion // 변수
 
@@ -33,7 +38,46 @@ public class CE20PlayUIsHandler : CE20UIsHandler {
 		base.Init(a_stParams);
 		this.Params = a_stParams;
 
+		this.SetupTexts();
 		this.SetupGridLines();
+	}
+
+	/** 결과를 출력한다 */
+	public void ShowResult(CE20Engine.EResult a_eResult) {
+		CE20ResultStorage.Inst.Result = a_eResult;
+		CSceneLoader.Inst.LoadScene(KDefine.G_SCENE_N_E21, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+	}
+
+	/** 상태를 갱신한다 */
+	protected override void UpdateState() {
+		base.UpdateState();
+
+		for(int i = 0; i < m_oTexts.GetLength(0); ++i) {
+			for(int j = 0; j < m_oTexts.GetLength(1); ++j) {
+				var eCellState = this.Params.m_oSceneManager.Engine.CellStates[i, j];
+				m_oTexts[i, j].text = this.GetCellStateStr(eCellState);
+			}
+		}
+	}
+
+	/** 텍스트를 설정한다 */
+	private void SetupTexts() {
+		m_oTexts = new TMP_Text[this.Params.m_stGridSize.y, this.Params.m_stGridSize.x];
+
+		for(int i = 0; i < m_oTexts.GetLength(0); ++i) {
+			for(int j = 0; j < m_oTexts.GetLength(1); ++j) {
+				var stIdx = new Vector3Int(j, i, 0);
+
+				var stOffset = new Vector3(KDefine.E20_CELL_WIDTH / 2.0f,
+					KDefine.E20_CELL_HEIGHT / -2.0f, 0.0f);
+				
+				var oText = CFactory.CreateCloneGameObj<TMP_Text>("Text",
+					m_oOriginText, m_oTextRoot, Vector3.zero, Vector3.one, Vector3.zero);
+
+				oText.transform.localPosition = this.Params.m_oSceneManager.Engine.GetPos(stIdx, stOffset);
+				m_oTexts[i, j] = oText;
+			}
+		}
 	}
 
 	/** 그리드 라인을 설정한다 */
@@ -71,6 +115,18 @@ public class CE20PlayUIsHandler : CE20UIsHandler {
 		}
 	}
 	#endregion // 함수
+
+	#region 접근 함수
+	/** 셀 상태 문자열을 반환한다 */
+	public string GetCellStateStr(CE20Engine.ECellState a_eState) {
+		switch(a_eState) {
+			case CE20Engine.ECellState.PLAYER_01: return "O";
+			case CE20Engine.ECellState.PLAYER_02: return "X";
+		}
+
+		return string.Empty;
+	}
+	#endregion // 접근 함수
 
 	#region 클래스 팩토리 함수
 	/** 매개 변수를 생성한다 */
