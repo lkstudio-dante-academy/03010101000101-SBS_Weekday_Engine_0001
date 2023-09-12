@@ -6,38 +6,20 @@ using System.Net.Sockets;
 using UnityEngine;
 
 /** 네트워크 관리자 */
-public class CE20NetworkManager : CSingleton<CE20NetworkManager> {
-	#region 변수
-	private Socket m_oSocket = null;
-	private Thread m_oWorkerThread = null;
-	#endregion // 변수
-
+public partial class CE20NetworkManager : CSingleton<CE20NetworkManager> {
 	#region 함수
 	/** 초기화 */
 	public override void Start() {
 		base.Start();
-
-		m_oWorkerThread = new Thread(this.WorkerMain);
-		m_oWorkerThread.Start();
+		this.WaitServerPacketInfo();
 	}
 
-	/** 제거 되었을 경우 */
-	public override void OnDestroy() {
-		base.OnDestroy();
-		m_oWorkerThread.Abort();
-	}
+	/** 패킷 정보를 전송한다 */
+	private void SendPacketInfo(Socket a_oSocket, STPacketInfo a_stPacketInfo) {
+		string oJSONStr = a_stPacketInfo.ToJSONStr();
+		var oBytes = System.Text.Encoding.Default.GetBytes(oJSONStr);
 
-	/** 매칭 요청을 보낸다 */
-	public void SendMatchingRequest(System.Action<CE20NetworkManager, bool> a_oCallback) {
-		// TODO: 서버 기반 통신 구조로 변경 필요
-		a_oCallback?.Invoke(this, true);
-	}
-
-	/** 작업자 쓰레드 메인 메서드 */
-	private void WorkerMain() {
-		do {
-			// Do Something
-		} while(true);
+		a_oSocket.Send(oBytes, oBytes.Length, SocketFlags.None);
 	}
 	#endregion // 함수
 }

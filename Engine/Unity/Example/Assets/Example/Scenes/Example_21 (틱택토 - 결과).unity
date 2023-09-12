@@ -498,7 +498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 495cc9ec4f7a5844cbde1f98abc8451a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_oScoreText: {fileID: 2094873724}
+  m_oResultText: {fileID: 2094873724}
 --- !u!1 &882039038
 GameObject:
   m_ObjectHideFlags: 0
@@ -1309,7 +1309,7 @@ GameObject:
   - component: {fileID: 2094873724}
   - component: {fileID: 2094873723}
   m_Layer: 5
-  m_Name: ScoreText
+  m_Name: ResultText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1382,7 +1382,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uC810\uC218 : 0"
+  m_Text: "\uACB0\uACFC"
 --- !u!222 &2094873725
 CanvasRenderer:
   m_ObjectHideFlags: 0

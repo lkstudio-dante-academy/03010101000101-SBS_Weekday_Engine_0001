@@ -25,7 +25,7 @@ public class CE20SceneManager : CSceneManager {
 	private enum EState {
 		NONE = -1,
 		PLAY,
-		Matching,
+		MATCHING,
 		[HideInInspector] MAX_VAL
 	}
 
@@ -45,7 +45,7 @@ public class CE20SceneManager : CSceneManager {
 	[SerializeField] private STUIsInfo m_oPlayUIsInfo;
 	[SerializeField] private STUIsInfo m_oMatchingUIsInfo;
 
-	private EState m_eState = EState.Matching;
+	private EState m_eState = EState.MATCHING;
 	private CE20UIsHandler m_oPlayUIsHandler = null;
 	private CE20UIsHandler m_oMatchingUIsHandler = null;
 	private CE20Engine m_oEngine = null;
@@ -120,8 +120,8 @@ public class CE20SceneManager : CSceneManager {
 		m_oPlayUIsInfo.m_oUIs.SetActive(m_eState == EState.PLAY);
 		m_oPlayUIsInfo.m_oObjs.SetActive(m_eState == EState.PLAY);
 
-		m_oMatchingUIsInfo.m_oUIs.SetActive(m_eState == EState.Matching);
-		m_oMatchingUIsInfo.m_oObjs.SetActive(m_eState == EState.Matching);
+		m_oMatchingUIsInfo.m_oUIs.SetActive(m_eState == EState.MATCHING);
+		m_oMatchingUIsInfo.m_oObjs.SetActive(m_eState == EState.MATCHING);
 		// 객체를 갱신한다 }
 
 		m_oPlayUIsHandler.SetIsDirtyUpdateState(true);

@@ -15,4 +15,16 @@ public class CE20ResultStorage : CSingleton<CE20ResultStorage> {
 		this.Result = CE20Engine.EResult.NONE;
 	}
 	#endregion // 함수
+
+	#region 접근 함수
+	/** 결과 문자열을 반환한다 */
+	public string GetResultStr() {
+		// 승리 일 경우
+		if(this.Result == CE20Engine.EResult.WIN) {
+			return "승리";
+		}
+
+		return (this.Result == CE20Engine.EResult.LOSE) ? "패배" : "무승부";
+	}
+	#endregion // 접근 함수
 }

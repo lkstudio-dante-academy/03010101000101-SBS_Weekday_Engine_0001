@@ -6,7 +6,7 @@ using UnityEngine.UI;
 /** Example 21 */
 public class CE21SceneManager : CSceneManager {
 	#region 변수
-	[SerializeField] private Text m_oScoreText = null;
+	[SerializeField] private Text m_oResultText = null;
 	#endregion // 변수
 
 	#region 프로퍼티
@@ -17,7 +17,7 @@ public class CE21SceneManager : CSceneManager {
 	/** 초기화 */
 	public override void Awake() {
 		base.Awake();
-		m_oScoreText.text = string.Format("점수 : {0}", CE15ResultStorage.Inst.Score);
+		m_oResultText.text = string.Format("결과 : {0}", CE20ResultStorage.Inst.GetResultStr());
 	}
 
 	/** 다시하기 버튼을 눌렀을 경우 */
