@@ -36,6 +36,14 @@ public class CE20MatchingUIsHandler : CE20UIsHandler {
 
 	#region 함수
 	/** 초기화 */
+	public override void Awake() {
+		base.Awake();
+
+		CE20NetworkManager.Inst.AddCallback(E20PacketType.MATCHING_RESPONSE, 
+			this.OnRecieveMatchingResponse);
+	}
+
+	/** 초기화 */
 	public virtual void Init(STParams a_stParams) {
 		base.Init(a_stParams);
 		this.Params = a_stParams;
@@ -46,19 +54,17 @@ public class CE20MatchingUIsHandler : CE20UIsHandler {
 		// 대기 상태 일 경우
 		if(m_eState == EState.WAIT) {
 			m_eState = EState.MATCHING;
-			CE20NetworkManager.Inst.SendMatchingRequest(this.OnRecieveMatchingResponse);
+			CE20NetworkManager.Inst.SendMatchingRequest();
 		}
 	}
 
 	/** 매칭 응답을 수신했을 경우 */
-	private void OnRecieveMatchingResponse(CE20NetworkManager a_oSender, bool a_bIsSuccess) {
+	private void OnRecieveMatchingResponse(CE20NetworkManager a_oSender, 
+		STPacketInfo a_stPacketInfo) {
 		m_eState = EState.WAIT;
 
-		// 매칭에 성공했을 경우
-		if(a_bIsSuccess) {
-			var oSceneManager = CSceneManager.GetSceneManager<CE20SceneManager>(KDefine.G_SCENE_N_E20);
-			oSceneManager.OnMatchingSuccess();
-		}
+		var oSceneManager = CSceneManager.GetSceneManager<CE20SceneManager>(KDefine.G_SCENE_N_E20);
+		oSceneManager.OnMatchingSuccess(int.Parse(a_stPacketInfo.m_oParams));
 	}
 
 	/** 상태를 갱신한다 */

@@ -106,15 +106,14 @@ public class CE20Engine : CComponent {
 		m_oNonPlayerController.transform.SetParent(this.Params.m_oPlayObjsRoot.transform, false);
 		(m_oNonPlayerController as CE20NonPlayerController).Init(CE20NonPlayerController.MakeParams(this, this.OnReceiveAgentTouchCallback));
 		// 에이전트 제어자를 설정한다 }
-
-
-
-		m_oPlayerController.SetIsEnableTouch(true);
 	}
 
 	/** 게임 플레이를 시작한다 */
-	public void Play() {
+	public void Play(int a_nPlayerOrder) {
 		this.IsPlaying = true;
+
+		m_oPlayerController.SetIsEnableTouch(a_nPlayerOrder == 1);
+		m_oNonPlayerController.SetIsEnableTouch(a_nPlayerOrder == 2);
 	}
 
 	/** 게임 플레이를 종료한다 */
@@ -157,7 +156,7 @@ public class CE20Engine : CComponent {
 
 			// 플레이어 제어자 일 경우
 			if(eCellState == ECellState.PLAYER_01) {
-				// TODO: 상대방에 현재 선택 전송 필요
+				CE20NetworkManager.Inst.SendAgentTouchRequest((Vector2Int)a_stIdx);
 			}
 		}
 	}

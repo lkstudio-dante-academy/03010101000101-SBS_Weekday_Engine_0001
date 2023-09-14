@@ -84,6 +84,19 @@ public class CE20SceneManager : CSceneManager {
 		(m_oPlayUIsHandler as CE20PlayUIsHandler).Init(CE20PlayUIsHandler.MakeParams(this, stGridSize));
 		(m_oMatchingUIsHandler as CE20MatchingUIsHandler).Init(CE20MatchingUIsHandler.MakeParams(this));
 		// UI 처리자를 설정한다 }
+
+#if UNITY_EDITOR
+		CE20NetworkManager.Inst.RunServerSocket();
+#endif // #if UNITY_EDITOR
+	}
+
+	/** 제거 되었을 경우 */
+	public override void OnDestroy() {
+		base.OnDestroy();
+
+#if UNITY_EDITOR
+		CE20NetworkManager.Inst.StopServerSocket();
+#endif // #if UNITY_EDITOR
 	}
 
 	/** 상태를 갱신한다 */
@@ -105,9 +118,9 @@ public class CE20SceneManager : CSceneManager {
 	}
 
 	/** 매칭에 성공했을 경우 */
-	public void OnMatchingSuccess() {
+	public void OnMatchingSuccess(int a_nPlayerOrder) {
 		m_eState = EState.PLAY;
-		m_oEngine.Play();
+		m_oEngine.Play(a_nPlayerOrder);
 
 		this.SetIsDirtyUpdateState(true);
 	}

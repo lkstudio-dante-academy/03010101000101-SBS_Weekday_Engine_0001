@@ -26,14 +26,27 @@ public partial class CE20NetworkManager : CSingleton<CE20NetworkManager> {
 #endif // #if UNITY_EDITOR
 	}
 
+	/** 서버 소켓을 중지시킨다 */
+	public void StopServerSocket() {
+#if UNITY_EDITOR
+		m_oServerSocket?.Close();
+#endif // #if UNITY_EDITOR
+	}
+
 	/** 매칭 응답을 전송한다 */
 	private void SendMatchingResponse(STMatchingInfo a_stMatchingInfo) {
-		var stPacketInfo = new STPacketInfo() {
-			m_eType = E20PacketType.MATCHING_RESPONSE
+		var stPacketInfo01 = new STPacketInfo() {
+			m_eType = E20PacketType.MATCHING_RESPONSE,
+			m_oParams = "1"
 		};
 
-		this.SendPacketInfo(a_stMatchingInfo.m_oPlayer01, stPacketInfo);
-		this.SendPacketInfo(a_stMatchingInfo.m_oPlayer02, stPacketInfo);
+		var stPacketInfo02 = new STPacketInfo() {
+			m_eType = E20PacketType.MATCHING_RESPONSE,
+			m_oParams = "2"
+		};
+
+		this.SendPacketInfo(a_stMatchingInfo.m_oPlayer01, stPacketInfo01);
+		this.SendPacketInfo(a_stMatchingInfo.m_oPlayer02, stPacketInfo02);
 	}
 
 	/** 매칭 정보를 탐색한다 */
@@ -57,6 +70,42 @@ public partial class CE20NetworkManager : CSingleton<CE20NetworkManager> {
 		return stMatchingInfo;
 	}
 
+	/** 클라이언트 패킷 정보를 릴레이한다 */
+	private void RelayClientPacketInfo(Socket a_oSender,
+		Socket a_oReceiver) {
+		// 송신자 또는 수신자가 없을 경우
+		if(a_oSender == null || a_oReceiver == null) {
+			return;
+		}
+
+		// 플레이어 1 수신 패킷 정보가 존재 할 경우
+		if(a_oSender.Poll(0, SelectMode.SelectRead)) {
+			var oBuffer = new byte[short.MaxValue];
+
+			int nNumBytes = a_oSender.Receive(oBuffer,
+				oBuffer.Length, SocketFlags.None);
+
+			string oJSONStr = System.Text.Encoding.Default.GetString(oBuffer,
+				0, nNumBytes);
+
+			var stPacketInfo = STPacketInfo.ToPacketInfo(oJSONStr);
+			stPacketInfo.m_eType = E20PacketType.AGENT_TOUCH_RESPONSE;
+
+			this.SendPacketInfo(a_oReceiver, stPacketInfo);
+		}
+	}
+
+	/** 클라이언트 패킷 정보를 릴레이한다 */
+	private void RelayClientPacketInfos() {
+		for(int i = 0; i < m_oMatchingInfoList.Count; ++i) {
+			this.RelayClientPacketInfo(m_oMatchingInfoList[i].m_oPlayer01,
+				m_oMatchingInfoList[i].m_oPlayer02);
+
+			this.RelayClientPacketInfo(m_oMatchingInfoList[i].m_oPlayer02,
+				m_oMatchingInfoList[i].m_oPlayer01);
+		}
+	}
+
 	/** 서버 소켓을 구동시킨다 */
 	private IEnumerator CoRunServerSocket() {
 		m_oServerSocket = new Socket(AddressFamily.InterNetwork,
@@ -67,6 +116,7 @@ public partial class CE20NetworkManager : CSingleton<CE20NetworkManager> {
 
 		do {
 			yield return null;
+			this.RelayClientPacketInfos();
 
 			// 연결 요청이 존재 할 경우
 			if(m_oServerSocket.Poll(0, SelectMode.SelectRead)) {

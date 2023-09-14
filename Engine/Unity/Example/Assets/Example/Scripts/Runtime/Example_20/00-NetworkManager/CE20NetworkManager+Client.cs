@@ -8,33 +8,52 @@ using UnityEngine;
 public partial class CE20NetworkManager : CSingleton<CE20NetworkManager> {
 	#region 변수
 	private Socket m_oSocket = null;
-	private Dictionary<E20PacketType, System.Action<CE20NetworkManager, bool>> m_oCallbackDict01 = new Dictionary<E20PacketType, System.Action<CE20NetworkManager, bool>>();
+	private Dictionary<E20PacketType, System.Action<CE20NetworkManager, STPacketInfo>> m_oCallbackDict = new Dictionary<E20PacketType, System.Action<CE20NetworkManager, STPacketInfo>>();
 	#endregion // 변수
 
 	#region 함수
+	/** 콜백을 추가한다 */
+	public void AddCallback(E20PacketType a_eType,
+		System.Action<CE20NetworkManager, STPacketInfo> a_oCallback) {
+		m_oCallbackDict.TryAdd(a_eType, a_oCallback);
+	}
+
+	/** 콜백을 제거한다 */
+	public void RemoveCallback(E20PacketType a_eType) {
+		// 콜백이 존재 할 경우
+		if(m_oCallbackDict.ContainsKey(a_eType)) {
+			m_oCallbackDict.Remove(a_eType);
+		}
+	}
+
 	/** 매칭 요청을 보낸다 */
-	public async void SendMatchingRequest(System.Action<CE20NetworkManager, bool> a_oCallback) {
+	public async void SendMatchingRequest() {
 		m_oSocket = new Socket(AddressFamily.InterNetwork,
 			SocketType.Stream, ProtocolType.Tcp);
-
-		// 콜백이 존재 할 경우
-		if(m_oCallbackDict01.ContainsKey(E20PacketType.MATCHING_REQUEST)) {
-			m_oCallbackDict01[E20PacketType.MATCHING_REQUEST] = a_oCallback;
-		} else {
-			m_oCallbackDict01.Add(E20PacketType.MATCHING_REQUEST, a_oCallback);
-		}
 
 		await m_oSocket.ConnectAsync(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9080));
 	}
 
 	/** 에이전트 선택 요청을 보낸다 */
 	public void SendAgentTouchRequest(Vector2Int a_stIdx) {
-		//a_stPacketInfo.m_oParams
+		STVec2Int stIdx = a_stIdx;
+
+		var stPacketInfo = new STPacketInfo() {
+			m_eType = E20PacketType.AGENT_TOUCH_REQUEST,
+			m_oParams = stIdx.ToJSONStr()
+		};
+
+		this.SendPacketInfo(m_oSocket, stPacketInfo);
 	}
 
 	/** 매칭 응답을 처리한다 */
 	private void HandleMatchingResponse(STPacketInfo a_stPacketInfo) {
-		m_oCallbackDict01[E20PacketType.MATCHING_REQUEST](this, true);
+		m_oCallbackDict.GetValueOrDefault(E20PacketType.MATCHING_RESPONSE)?.Invoke(this, a_stPacketInfo);
+	}
+
+	/** 에이전트 터치 응답을 처리한다 */
+	private void HandleAgentTouchResponse(STPacketInfo a_stPacketInfo) {
+		m_oCallbackDict.GetValueOrDefault(E20PacketType.AGENT_TOUCH_RESPONSE)?.Invoke(this, a_stPacketInfo);
 	}
 
 	/** 서버 패킷 정보를 대기한다 */
@@ -58,6 +77,7 @@ public partial class CE20NetworkManager : CSingleton<CE20NetworkManager> {
 
 				switch(stPacketInfo.m_eType) {
 					case E20PacketType.MATCHING_RESPONSE: this.HandleMatchingResponse(stPacketInfo); break;
+					case E20PacketType.AGENT_TOUCH_RESPONSE: this.HandleAgentTouchResponse(stPacketInfo); break;
 				}
 			}
 		} while(true);

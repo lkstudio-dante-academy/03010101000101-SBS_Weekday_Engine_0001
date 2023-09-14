@@ -39,12 +39,27 @@ public struct STVec2Int {
 		m_nX = a_nX;
 		m_nY = a_nY;
 	}
+
+	/** JSON 문자열로 변환한다 */
+	public string ToJSONStr() {
+		return JsonConvert.SerializeObject(this);
+	}
 	#endregion // 함수
 
 	#region 클래스 함수
 	/** 2 차원 벡터로 변환한다 */
+	public static STVec2Int ToVec2Int(string a_oJSONStr) {
+		return JsonConvert.DeserializeObject<STVec2Int>(a_oJSONStr);
+	}
+
+	/** 2 차원 벡터로 변환한다 */
 	public static implicit operator Vector2Int(STVec2Int a_stSender) {
 		return new Vector2Int(a_stSender.m_nX, a_stSender.m_nY);
+	}
+
+	/** 2 차원 벡터로 변환한다 */
+	public static implicit operator STVec2Int(Vector2Int a_stSender) {
+		return new STVec2Int(a_stSender.x, a_stSender.y);
 	}
 	#endregion // 클래스 함수
 }
