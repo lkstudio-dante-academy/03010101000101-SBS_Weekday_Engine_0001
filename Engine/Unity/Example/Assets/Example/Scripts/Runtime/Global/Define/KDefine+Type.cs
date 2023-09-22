@@ -28,16 +28,18 @@ public enum E20PacketType {
 	[HideInInspector] MAX_VAL
 }
 
-/** 2 차원 정수 벡터 */
-public struct STVec2Int {
+/** 3 차원 정수 벡터 */
+public struct STVec3Int {
 	public int m_nX;
 	public int m_nY;
+	public int m_nZ;
 
 	#region 함수
 	/** 생성자 */
-	public STVec2Int(int a_nX, int a_nY) {
+	public STVec3Int(int a_nX, int a_nY, int a_nZ) {
 		m_nX = a_nX;
 		m_nY = a_nY;
+		m_nZ = a_nZ;
 	}
 
 	/** JSON 문자열로 변환한다 */
@@ -47,19 +49,19 @@ public struct STVec2Int {
 	#endregion // 함수
 
 	#region 클래스 함수
-	/** 2 차원 벡터로 변환한다 */
-	public static STVec2Int ToVec2Int(string a_oJSONStr) {
-		return JsonConvert.DeserializeObject<STVec2Int>(a_oJSONStr);
+	/** 3 차원 벡터로 변환한다 */
+	public static STVec3Int ToVec3Int(string a_oJSONStr) {
+		return JsonConvert.DeserializeObject<STVec3Int>(a_oJSONStr);
 	}
 
-	/** 2 차원 벡터로 변환한다 */
-	public static implicit operator Vector2Int(STVec2Int a_stSender) {
-		return new Vector2Int(a_stSender.m_nX, a_stSender.m_nY);
+	/** 3 차원 벡터로 변환한다 */
+	public static implicit operator Vector3Int(STVec3Int a_stSender) {
+		return new Vector3Int(a_stSender.m_nX, a_stSender.m_nY, a_stSender.m_nZ);
 	}
 
-	/** 2 차원 벡터로 변환한다 */
-	public static implicit operator STVec2Int(Vector2Int a_stSender) {
-		return new STVec2Int(a_stSender.x, a_stSender.y);
+	/** 3 차원 벡터로 변환한다 */
+	public static implicit operator STVec3Int(Vector3Int a_stSender) {
+		return new STVec3Int(a_stSender.x, a_stSender.y, a_stSender.y);
 	}
 	#endregion // 클래스 함수
 }

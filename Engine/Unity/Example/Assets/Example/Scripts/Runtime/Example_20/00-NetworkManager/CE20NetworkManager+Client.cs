@@ -35,8 +35,8 @@ public partial class CE20NetworkManager : CSingleton<CE20NetworkManager> {
 	}
 
 	/** 에이전트 선택 요청을 보낸다 */
-	public void SendAgentTouchRequest(Vector2Int a_stIdx) {
-		STVec2Int stIdx = a_stIdx;
+	public void SendAgentTouchRequest(Vector3Int a_stIdx) {
+		STVec3Int stIdx = a_stIdx;
 
 		var stPacketInfo = new STPacketInfo() {
 			m_eType = E20PacketType.AGENT_TOUCH_REQUEST,

@@ -33,7 +33,7 @@ public class CE20NonPlayerController : CE20AgentController {
 	/** 에이전트 터치 응답을 수신했을 경우 */
 	private void OnReceiveAgentTouchResponse(CE20NetworkManager a_oSender,
 		STPacketInfo a_stPacketInfo) {
-		var stIdx = STVec2Int.ToVec2Int(a_stPacketInfo.m_oParams);
+		var stIdx = STVec3Int.ToVec3Int(a_stPacketInfo.m_oParams);
 
 		/*
 		 * SendMessage 및 BroadcastMessage 메서드를 활용하면 특정 게임 객체가

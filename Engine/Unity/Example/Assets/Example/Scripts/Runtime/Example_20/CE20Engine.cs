@@ -127,7 +127,7 @@ public class CE20Engine : CComponent {
 	/** 에이전트 터치 콜백을 수신했을 경우 */
 	private void OnReceiveAgentTouchCallback(object[] a_oParams) {
 		this.OnReceiveAgentTouchCallback(a_oParams[0] as CE20AgentController,
-			(Vector3Int)a_oParams[1]);
+			(STVec3Int)a_oParams[1]);
 	}
 
 	/** 에이전트 터치 콜백을 수신했을 경우 */
@@ -156,7 +156,7 @@ public class CE20Engine : CComponent {
 
 			// 플레이어 제어자 일 경우
 			if(eCellState == ECellState.PLAYER_01) {
-				CE20NetworkManager.Inst.SendAgentTouchRequest((Vector2Int)a_stIdx);
+				CE20NetworkManager.Inst.SendAgentTouchRequest(a_stIdx);
 			}
 		}
 	}
