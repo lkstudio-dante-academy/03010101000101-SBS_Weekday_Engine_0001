@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /*
  * 자료구조란?
@@ -43,6 +44,19 @@ using UnityEngine;
  */
 /** Example 23 */
 public partial class CE23SceneManager : CSceneManager {
+	#region 변수
+	[Header("=====> UIs <=====")]
+	[SerializeField] private InputField m_oIdxInput = null;
+	[SerializeField] private InputField m_oValInput = null;
+
+	[Header("=====> Game Objects <=====")]
+	[SerializeField] private GameObject m_oArrayListTargetRoot = null;
+	[SerializeField] private GameObject m_oArrayListOriginTarget = null;
+
+	[SerializeField] private GameObject m_oLinkedListTargetRoot = null;
+	[SerializeField] private GameObject m_oLinkedListOriginTarget = null;
+	#endregion // 변수
+
 	#region 프로퍼티
 	public override string SceneName => KDefine.G_SCENE_N_E23;
 	#endregion // 프로퍼티
@@ -51,15 +65,19 @@ public partial class CE23SceneManager : CSceneManager {
 	/** 초기화 */
 	public override void Awake() {
 		base.Awake();
-
-		var oValList = new CArrayList<int>();
-		oValList.Add(1);
-		oValList.Add(2);
-		oValList.Add(3);
-
-		for(int i = 0; i < oValList.Count; ++i) {
-			Debug.Log(oValList[i]);
-		}
+		CScheduleManager.Inst.AddComponent(this);
 	}
 	#endregion // 함수
+
+	#region 접근 함수
+	/** 인덱스를 반환한다 */
+	private int GetIdx() {
+		return int.TryParse(m_oIdxInput.text, out int nIdx) ? nIdx : 0;
+	}
+
+	/** 값을 반환한다 */
+	private int GetVal() {
+		return int.TryParse(m_oValInput.text, out int nVal) ? nVal : 0;
+	}
+	#endregion // 접근 함수
 }
