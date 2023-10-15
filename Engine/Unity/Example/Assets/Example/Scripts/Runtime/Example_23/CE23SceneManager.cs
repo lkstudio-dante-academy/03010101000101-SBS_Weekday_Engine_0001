@@ -18,7 +18,7 @@ using UnityEngine.UI;
  * - 힙
  * - 그래프
  * 
- * 리스트 자료구조란?
+ * 리스트란?
  * - 관리되고 있는 데이터의 순서가 존재하는 자료구조를 의미한다. (즉, 리스트
  * 자료구조를 활용하면 특정 위치에 데이터를 추가하거나 가져오는 것이 가능하다는
  * 것을 알 수 있다.)
@@ -30,7 +30,7 @@ using UnityEngine.UI;
  * 단, 배열의 원리를 이용해서 데이터의 순서를 만들어내기 때문에 특정 위치에
  * 존재하는 데이터를 제거하거나 추가 시킬 경우 데이터의 이동 및 복사 발생하는
  * 단점이 존재한다. (즉, 데이터의 삽입/삭제 연산이 빈번하게 발생 할 경우
- * 배열 리스트 느리기 동작한다는 것을 알 수 있다.)
+ * 배열 리스트가 느리게 동작한다는 것을 알 수 있다.)
  * 
  * 반면, 연결 리스트는 참조에 의해서 데이터의 순차성을 만들어내기 때문에 특정
  * 위치에 존재하는 데이터에 접근하기 위해서는 항상 첫 데이터부터 순차적으로
@@ -41,6 +41,16 @@ using UnityEngine.UI;
  * 데이터가 추가되거나 삭제 된다 하더라도 데이터의 이동이 발생하지 않는다.
  * (즉, 삽입/삭제가 빈번한 경우 연결 리스트는 좋은 성능을 지닌다는 것을 알 수
  * 있다.)
+ * 
+ * 스택이란?
+ * - LIFO (Last In First Out) 순서로 데이터를 관리하는 구조를 의미한다.
+ * (즉, 스택은 데이터의 입/출력 순서가 엄격하게 제한되기 때문에 다른 컬렉션과
+ * 달리 특정 위치에 존재하는 데이터에 자유롭게 접근하는 것이 불가능하다.)
+ * 
+ * 큐란?
+ * - FIFO (First In First Out) 순서로 데이터를 관리하는 구조를 의미한다.
+ * (즉, 큐 또한 스택과 마찬가지로 특정 위치에 존재하는 데이터에 자유롭게
+ * 접근하는 것이 불가능하다.)
  */
 /** Example 23 */
 public partial class CE23SceneManager : CSceneManager {
@@ -53,8 +63,8 @@ public partial class CE23SceneManager : CSceneManager {
 	[SerializeField] private GameObject m_oArrayListTargetRoot = null;
 	[SerializeField] private GameObject m_oArrayListOriginTarget = null;
 
-	[SerializeField] private GameObject m_oLinkedListTargetRoot = null;
-	[SerializeField] private GameObject m_oLinkedListOriginTarget = null;
+	[SerializeField] private GameObject m_oQueueTargetRoot = null;
+	[SerializeField] private GameObject m_oQueueOriginTarget = null;
 	#endregion // 변수
 
 	#region 프로퍼티
@@ -66,6 +76,16 @@ public partial class CE23SceneManager : CSceneManager {
 	public override void Awake() {
 		base.Awake();
 		CScheduleManager.Inst.AddComponent(this);
+	}
+
+	/** 초기화 */
+	public override void Start() {
+		base.Start();
+
+#if E23_QUEUE
+		this.LoadNodes();
+		this.ResetNodeObjs();
+#endif // #if E23_QUEUE
 	}
 	#endregion // 함수
 

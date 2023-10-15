@@ -124,6 +124,11 @@ public class CLinkedList<T> {
 	#endregion // 함수
 
 	#region 접근 함수
+	/** 인덱스 유효 여부를 검사한다 */
+	public bool IsValidIdx(int a_nIdx) {
+		return a_nIdx >= 0 && a_nIdx < m_nNumVals;
+	}
+
 	/** 값을 탐색한다 */
 	public int Find(T a_tVal) {
 		int nIdx = 0;
@@ -140,11 +145,6 @@ public class CLinkedList<T> {
 		}
 
 		return -1;
-	}
-
-	/** 인덱스 유효 여부를 검사한다 */
-	private bool IsValidIdx(int a_nIdx) {
-		return a_nIdx >= 0 && a_nIdx < m_nNumVals;
 	}
 
 	/** 노드를 반환한다 */

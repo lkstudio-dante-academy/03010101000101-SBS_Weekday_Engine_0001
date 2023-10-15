@@ -85,6 +85,11 @@ public class CArrayList<T> {
 	#endregion // 함수
 
 	#region 접근 함수
+	/** 인덱스 유효 여부를 검사한다 */
+	public bool IsValidIdx(int a_nIdx) {
+		return a_nIdx >= 0 && a_nIdx < m_nNumVals;
+	}
+
 	/** 값을 탐색한다 */
 	public int Find(T a_tVal) {
 		for(int i = 0; i < m_nNumVals; ++i) {
@@ -95,11 +100,6 @@ public class CArrayList<T> {
 		}
 
 		return -1;
-	}
-
-	/** 인덱스 유효 여부를 검사한다 */
-	private bool IsValidIdx(int a_nIdx) {
-		return a_nIdx >= 0 && a_nIdx < m_nNumVals;
 	}
 	#endregion // 접근 함수
 }

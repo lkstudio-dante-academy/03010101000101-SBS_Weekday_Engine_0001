@@ -249,7 +249,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 8d37c7758e69ad94c858eaea3242da42, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -295,7 +295,7 @@ GameObject:
   - component: {fileID: 5563710837267242376}
   - component: {fileID: 6039721214996095044}
   m_Layer: 0
-  m_Name: E23Target
+  m_Name: E23ArrayListTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -336,3 +336,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_oText: {fileID: 8120682086121968676}
+  m_oMeshRenderer: {fileID: 8120682087681873122}
