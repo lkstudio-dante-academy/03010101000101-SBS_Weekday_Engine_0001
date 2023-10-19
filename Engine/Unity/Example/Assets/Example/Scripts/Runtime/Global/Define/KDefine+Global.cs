@@ -41,6 +41,7 @@ public static partial class KDefine {
 	public const string G_SCENE_N_E21 = "Example_21 (틱택토 - 결과)";
 	public const string G_SCENE_N_E22 = "Example_22 (플러그인 연동)";
 	public const string G_SCENE_N_E23 = "Example_23 (자료구조)";
+	public const string G_SCENE_N_E24 = "Example_24 (파티클)";
 	#endregion // 기본
 }
 

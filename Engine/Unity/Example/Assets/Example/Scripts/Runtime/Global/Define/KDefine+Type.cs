@@ -62,7 +62,7 @@ public struct STVec3 {
 
 	/** 3 차원 벡터로 변환한다 */
 	public static implicit operator STVec3(Vector3 a_stSender) {
-		return new STVec3(a_stSender.x, a_stSender.y, a_stSender.y);
+		return new STVec3(a_stSender.x, a_stSender.y, a_stSender.z);
 	}
 	#endregion // 클래스 함수
 }

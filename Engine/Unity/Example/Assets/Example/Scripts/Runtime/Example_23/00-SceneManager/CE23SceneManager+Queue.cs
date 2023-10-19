@@ -4,6 +4,9 @@ using System.Linq;
 using UnityEngine;
 
 #if E23_QUEUE
+using UnityEngine.EventSystems;
+using DG.Tweening;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -24,10 +27,21 @@ public partial class CE23SceneManager : CSceneManager {
 	public record STNodeObjInfo {
 		public STNode m_stNode;
 		public CE23Target m_oTarget = null;
+		public List<LineRenderer> m_oLineList = new List<LineRenderer>();
+	}
+
+	/** 정점 정보 */
+	public record STVertexInfo {
+		public int m_nCost = 0;
+		public STNodeObjInfo m_oCurNodeObjInfo = null;
+		public STVertexInfo m_stPrevVertexInfo = null;
 	}
 
 	#region 변수
 	private int m_nLastNodeID = 0;
+	
+	private Tween m_oMoveAni = null;
+	private CE23Target m_oSelTarget = null;
 	private List<STNode> m_oNodeList = new List<STNode>();
 	private List<STNodeObjInfo> m_oNodeObjInfoList = new List<STNodeObjInfo>();
 	#endregion // 변수
@@ -41,9 +55,14 @@ public partial class CE23SceneManager : CSceneManager {
 	/** 노드 객체를 리셋한다 */
 	public void ResetNodeObjs() {
 		for(int i = 0; i < m_oNodeObjInfoList.Count; ++i) {
+			for(int j = 0; j < m_oNodeObjInfoList[i].m_oLineList.Count; ++j) {
+				Destroy(m_oNodeObjInfoList[i].m_oLineList[j]);
+			}
+
 			Destroy(m_oNodeObjInfoList[i].m_oTarget.gameObject);
 		}
 
+		m_oSelTarget = null;
 		this.SetupNodeObjs();
 	}
 
@@ -53,12 +72,143 @@ public partial class CE23SceneManager : CSceneManager {
 		stNode.m_stPos = Vector3.zero;
 
 		var oNodeObj = this.CreateNodeObj(stNode);
+
+		m_oNodeList.Add(stNode);
 		m_oNodeObjInfoList.Add(oNodeObj);
 	}
 
 	/** 노드 제거 버튼을 눌렀을 경우 */
 	public void OnTouchRemoveNodeBtn() {
+		// 선택 된 노드가 없을 경우
+		if(m_oSelTarget == null) {
+			return;
+		}
 
+		int nResult = m_oNodeObjInfoList.FindIndex((a_stNodeObjInfo) => a_stNodeObjInfo.m_oTarget == m_oSelTarget);
+
+		if(nResult >= 0 && nResult < m_oNodeObjInfoList.Count) {
+			var stNode = m_oNodeObjInfoList[nResult].m_stNode;
+			var oNeighborNodeList = stNode.m_oNeighborNodeList;
+
+			for(int i = 0; i < oNeighborNodeList.Count; ++i) {
+				oNeighborNodeList[i].m_oNeighborNodeList.Remove(stNode);
+			}
+
+			m_oNodeList.Remove(stNode);
+			this.ResetNodeObjs();
+		}
+	}
+
+	/** 저장 버튼을 눌렀을 경우 */
+	public void OnTouchSaveBtn() {
+		m_oNodeList.Clear();
+
+		for(int i = 0; i < m_oNodeObjInfoList.Count; ++i) {
+			m_oNodeList.Add(m_oNodeObjInfoList[i].m_stNode);
+		}
+
+		this.SaveNodes();
+	}
+
+	/** 경로 탐색 시작 버튼을 눌렀을 경우 */
+	public void OnTouchStartPathFindingBtn() {
+		m_oMoveableTarget.SetActive(true);
+
+		bool bIsValid01 = int.TryParse(m_oStartInput.text, out int nStartID);
+		bool bIsValid02 = int.TryParse(m_oEndInput.text, out int nEndID);
+
+		// 위치를 입력하지 않았을 경우
+		if(!bIsValid01 || !bIsValid02) {
+			return;
+		}
+
+		int nStartIdx = m_oNodeObjInfoList.FindIndex((a_stNodeObjInfo) => 
+			a_stNodeObjInfo.m_stNode.m_nID == nStartID);
+
+		int nEndIdx = m_oNodeObjInfoList.FindIndex((a_stNodeObjInfo) =>
+			a_stNodeObjInfo.m_stNode.m_nID == nEndID);
+
+		// 노드 정보가 없을 경우
+		if(nStartIdx < 0 || nEndIdx < 0) {
+			return;
+		}
+
+		var oPosList = this.FindPath(nStartIdx, nEndIdx);
+
+		// 경로가 존재 할 경우
+		if(oPosList.Count >= 1) {
+			var oSequence = DOTween.Sequence();
+			m_oMoveableTarget.transform.position = oPosList[0];
+
+			for(int i = 1; i < oPosList.Count; ++i) {
+				var stPos = oPosList[i];
+				var oMoveAni = m_oMoveableTarget.transform.DOMove(stPos, 1.0f).SetAutoKill().SetEase(Ease.Linear);
+
+				oSequence.Append(oMoveAni);
+			}
+
+			m_oMoveAni?.Kill();
+			m_oMoveAni = oSequence;
+		}
+	}
+
+	/** 경로를 탐색한다 */
+	private List<Vector3> FindPath(int a_nStartIdx, int a_nEndIdx) {
+		var oPosList = new List<Vector3>();
+		var oOpenVertexList = new List<STVertexInfo>();
+		var oCloseVertexList = new List<STVertexInfo>();
+
+		var oCurVertex = this.CreateVertex(a_nStartIdx, 0);
+		oOpenVertexList.Add(oCurVertex);
+
+		var oEndNodeObjInfo = m_oNodeObjInfoList[a_nEndIdx];
+
+		while(oOpenVertexList.Count >= 1) {
+			oCurVertex = oOpenVertexList[0];
+
+			oOpenVertexList.RemoveAt(0);
+			oCloseVertexList.Add(oCurVertex);
+
+			// 목적지 일 경우
+			if(oCurVertex.m_oCurNodeObjInfo.m_stNode.m_nID ==
+				oEndNodeObjInfo.m_stNode.m_nID) {
+				var oVertexStack = new CStack<Vector3>();
+
+				while(oCurVertex != null) {
+					oVertexStack.Push(oCurVertex.m_oCurNodeObjInfo.m_oTarget.transform.position);
+					oCurVertex = oCurVertex.m_stPrevVertexInfo;
+				}
+
+				while(oVertexStack.Count >= 1) {
+					oPosList.Add(oVertexStack.Pop());
+				}
+
+				return oPosList;
+			}
+
+			var oNeighborNodeList = oCurVertex.m_oCurNodeObjInfo.m_stNode.m_oNeighborNodeList;
+
+			for(int i = 0; i < oNeighborNodeList.Count; ++i) {
+				int nIdx = m_oNodeObjInfoList.FindIndex((a_stNodeObjInfo) => 
+					a_stNodeObjInfo.m_stNode == oNeighborNodeList[i]);
+
+				var oNeighborVertex = this.CreateVertex(nIdx, oCurVertex.m_nCost + 1);
+				oNeighborVertex.m_stPrevVertexInfo = oCurVertex;
+
+				int nCloseVertexIdx = oCloseVertexList.FindIndex((a_stVertexInfo) =>
+					a_stVertexInfo.m_oCurNodeObjInfo == oNeighborVertex.m_oCurNodeObjInfo);
+
+				// 새로운 최단 경로가 나왔을 경우
+				if(nCloseVertexIdx >= 0 && oCloseVertexList[nCloseVertexIdx].m_nCost > oNeighborVertex.m_nCost) {
+					oCloseVertexList[nCloseVertexIdx].m_nCost = oNeighborVertex.m_nCost;
+					oCloseVertexList[nCloseVertexIdx].m_stPrevVertexInfo = oCurVertex;
+				} else {
+					oOpenVertexList.Add(oNeighborVertex);
+				}
+			}
+		}
+
+		return oPosList;
 	}
 
 	/** 노드를 로드한다 */
@@ -70,7 +220,11 @@ public partial class CE23SceneManager : CSceneManager {
 			this.RestoreNeighborNodes(m_oNodeList[i]);
 		}
 
-		m_nLastNodeID = m_oNodeList.Max((a_stNode) => a_stNode.m_nID);
+		// 노드가 존재 할 경우
+		if(m_oNodeList.Count >= 1) {
+			m_nLastNodeID = m_oNodeList.Max((a_stNode) => a_stNode.m_nID);
+			m_nLastNodeID += 1;
+		}
 	}
 
 	/** 노드를 저장한다 */
@@ -96,9 +250,47 @@ public partial class CE23SceneManager : CSceneManager {
 		}
 	}
 
+	/** 이웃 노드 객체를 갱신한다 */
+	private void UpdateNeighborNodeObjs(STNodeObjInfo a_stNodeObjInfo) {
+		var oNeighborNodeList = a_stNodeObjInfo.m_stNode.m_oNeighborNodeList;
+
+		for(int i = 0; i < a_stNodeObjInfo.m_oLineList.Count; ++i) {
+			var oLine = a_stNodeObjInfo.m_oLineList[i];
+
+			int nResult = m_oNodeObjInfoList.FindIndex((a_stCompareNodeObjInfo) =>
+				a_stCompareNodeObjInfo.m_stNode == oNeighborNodeList[i]);
+
+			var oPosList = new List<Vector3>() {
+				a_stNodeObjInfo.m_oTarget.transform.position,
+				m_oNodeObjInfoList[nResult].m_oTarget.transform.position
+			};
+
+			oLine.positionCount = oPosList.Count;
+			oLine.SetPositions(oPosList.ToArray());
+		}
+	}
+
 	/** 이웃 노드 객체를 설정한다 */
 	private void SetupNeighborNodeObjs(STNodeObjInfo a_stNodeObjInfo) {
-		// TODO: 이웃 노드와 링크 설정 필요
+		var oNeighborNodeList = a_stNodeObjInfo.m_stNode.m_oNeighborNodeList;
+
+		for(int i = 0; i < oNeighborNodeList.Count; ++i) {
+			var oLine = CFactory.CreateCloneGameObj<LineRenderer>("Line",
+				m_oQueueOriginLine, m_oQueueLineRoot, Vector3.zero, Vector3.one, Vector3.zero);
+
+			int nResult = m_oNodeObjInfoList.FindIndex((a_stCompareNodeObjInfo) =>
+				a_stCompareNodeObjInfo.m_stNode == oNeighborNodeList[i]);
+
+			var oPosList = new List<Vector3>() {
+				a_stNodeObjInfo.m_oTarget.transform.position,
+				m_oNodeObjInfoList[nResult].m_oTarget.transform.position
+			};
+
+			oLine.positionCount = oPosList.Count;
+			oLine.SetPositions(oPosList.ToArray());
+
+			a_stNodeObjInfo.m_oLineList.Add(oLine);
+		}
 	}
 
 	/** 이웃 노드 식별자를 설정한다 */
@@ -120,6 +312,109 @@ public partial class CE23SceneManager : CSceneManager {
 			if(nResult >= 0 && nResult < m_oNodeList.Count) {
 				a_stNode.m_oNeighborNodeList.Add(m_oNodeList[nResult]);
 			}
+		}
+	}
+
+	/** 터치 시작을 처리한다 */
+	private void HandleOnTouchBegin(CTouchDispatcher a_oSender,
+		PointerEventData a_oEventData) {
+
+		var stRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+		bool bIsHit = Physics.Raycast(stRay, out RaycastHit stRaycastHit);
+
+		m_oSelTarget = null;
+
+		// 터치 된 노드가 존재 할 경우
+		if(bIsHit) {
+			m_oSelTarget = stRaycastHit.collider.GetComponentInParent<CE23Target>();
+			m_oQueueLine.positionCount = 0;
+		}
+	}
+
+	/** 터치 이동을 처리한다 */
+	private void HandleOnTouchMove(CTouchDispatcher a_oSender,
+		PointerEventData a_oEventData) {
+
+		// 선택 된 노드가 없을 경우
+		if(m_oSelTarget == null) {
+			return;
+		}
+
+		var stPos = a_oEventData.ExGetWorldPos();
+		int nResult = m_oNodeObjInfoList.FindIndex((a_stNodeObjInfo) => a_stNodeObjInfo.m_oTarget == m_oSelTarget);
+
+		// 노드 정보가 없을 경우
+		if(nResult < 0 || nResult >= m_oNodeObjInfoList.Count) {
+			return;
+		}
+
+		// 마우스 왼쪽 버튼을 눌렀을 경우
+		if(Input.GetMouseButton((int)EMouseBtn.LEFT)) {
+			m_oSelTarget.transform.position = stPos;
+			m_oNodeObjInfoList[nResult].m_stNode.m_stPos = stPos;
+
+			for(int i = 0; i < m_oNodeObjInfoList.Count; ++i) {
+				this.UpdateNeighborNodeObjs(m_oNodeObjInfoList[i]);
+			}
+		}
+		// 마우스 오른쪽 버튼을 눌렀을 경우
+		else if(Input.GetMouseButton((int)EMouseBtn.RIGHT)) {
+			var oPosList = new List<Vector3>() {
+				m_oSelTarget.transform.position,
+				stPos
+			};
+
+			m_oQueueLine.positionCount = oPosList.Count;
+			m_oQueueLine.SetPositions(oPosList.ToArray());
+		}
+	}
+
+	/** 터치 종료를 처리한다 */
+	private void HandleOnTouchEnd(CTouchDispatcher a_oSender,
+		PointerEventData a_oEventData) {
+
+		this.HandleOnTouchMove(a_oSender, a_oEventData);
+		m_oQueueLine.positionCount = 0;
+
+		// 마우스 오른쪽 버튼 입력 종료가 아닐 경우
+		if(!Input.GetMouseButtonUp((int)EMouseBtn.RIGHT)) {
+			return;
+		}
+
+		var stRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+		bool bIsHit = Physics.Raycast(stRay, out RaycastHit stRaycastHit);
+
+		// 터치 된 노드가 존재 할 경우
+		if(bIsHit) {
+			var oHitTarget = stRaycastHit.collider.GetComponentInParent<CE23Target>();
+
+			// 목적지 노드가 없을 경우
+			if(oHitTarget == null || m_oSelTarget == oHitTarget) {
+				return;
+			}
+
+			int nSrc = m_oNodeObjInfoList.FindIndex((a_stNodeObjInfo) => a_stNodeObjInfo.m_oTarget == m_oSelTarget);
+			int nDest = m_oNodeObjInfoList.FindIndex((a_stNodeObjInfo) => a_stNodeObjInfo.m_oTarget == oHitTarget);
+
+			// 출발지 or 목적지 노드가 없을 경우
+			if(nSrc < 0 || nDest < 0) {
+				return;
+			}
+
+			var stSrcNode = m_oNodeObjInfoList[nSrc].m_stNode;
+			var stDestNode = m_oNodeObjInfoList[nDest].m_stNode;
+
+			// 목적지 노드와 연결 되지 않았을 경우
+			if(!stSrcNode.m_oNeighborNodeList.Contains(stDestNode)) {
+				stSrcNode.m_oNeighborNodeList.Add(stDestNode);
+			}
+
+			// 출발지 노드와 연결 되지 않았을 경우
+			if(!stDestNode.m_oNeighborNodeList.Contains(stSrcNode)) {
+				stDestNode.m_oNeighborNodeList.Add(stSrcNode);
+			}
+
+			this.ResetNodeObjs();
 		}
 	}
 	#endregion // 함수
@@ -144,6 +439,14 @@ public partial class CE23SceneManager : CSceneManager {
 		return new STNodeObjInfo() {
 			m_stNode = a_stNode,
 			m_oTarget = oTarget
+		};
+	}
+
+	/** 정점을 생성한다 */
+	private STVertexInfo CreateVertex(int a_nIdx, int a_nCost) {
+		return new STVertexInfo() {
+			m_nCost = a_nCost,
+			m_oCurNodeObjInfo = m_oNodeObjInfoList[a_nIdx]
 		};
 	}
 	#endregion // 팩토리 함수

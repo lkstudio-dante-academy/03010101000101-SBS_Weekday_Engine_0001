@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using DG.Tweening;
+
 /*
  * 자료구조란?
  * - 특정 데이터를 저장하고 표현하는 방법을 의미한다. (즉, 자료구조는 데이터를
@@ -55,14 +57,24 @@ using UnityEngine.UI;
 /** Example 23 */
 public partial class CE23SceneManager : CSceneManager {
 	#region 변수
+	[SerializeField] private Image m_oBGImg = null;
+	[SerializeField] private LineRenderer m_oQueueLine = null;
+
 	[Header("=====> UIs <=====")]
 	[SerializeField] private InputField m_oIdxInput = null;
 	[SerializeField] private InputField m_oValInput = null;
+
+	[SerializeField] private InputField m_oStartInput = null;
+	[SerializeField] private InputField m_oEndInput = null;
 
 	[Header("=====> Game Objects <=====")]
 	[SerializeField] private GameObject m_oArrayListTargetRoot = null;
 	[SerializeField] private GameObject m_oArrayListOriginTarget = null;
 
+	[SerializeField] private GameObject m_oQueueLineRoot = null;
+	[SerializeField] private GameObject m_oQueueOriginLine = null;
+
+	[SerializeField] private GameObject m_oMoveableTarget = null;
 	[SerializeField] private GameObject m_oQueueTargetRoot = null;
 	[SerializeField] private GameObject m_oQueueOriginTarget = null;
 	#endregion // 변수
@@ -76,6 +88,15 @@ public partial class CE23SceneManager : CSceneManager {
 	public override void Awake() {
 		base.Awake();
 		CScheduleManager.Inst.AddComponent(this);
+
+#if E23_QUEUE
+		m_oMoveableTarget.SetActive(false);
+
+		var oDispatcher = m_oBGImg.GetComponent<CTouchDispatcher>();
+		oDispatcher.SetBeginCallback(this.HandleOnTouchBegin);
+		oDispatcher.SetMoveCallback(this.HandleOnTouchMove);
+		oDispatcher.SetEndCallback(this.HandleOnTouchEnd);
+#endif // #if E23_QUEUE
 	}
 
 	/** 초기화 */
@@ -85,6 +106,15 @@ public partial class CE23SceneManager : CSceneManager {
 #if E23_QUEUE
 		this.LoadNodes();
 		this.ResetNodeObjs();
+#endif // #if E23_QUEUE
+	}
+
+	/** 제거 되었을 경우 */
+	public override void OnDestroy() {
+		base.OnDestroy();
+
+#if E23_QUEUE
+		m_oMoveAni?.Kill();
 #endif // #if E23_QUEUE
 	}
 	#endregion // 함수
