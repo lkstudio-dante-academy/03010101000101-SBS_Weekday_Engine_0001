@@ -53,6 +53,7 @@ dotnet_style_null_propagation = true
 dotnet_style_object_initializer = true
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 dotnet_style_prefer_auto_properties = true
+dotnet_style_prefer_collection_expression = when_types_loosely_match
 dotnet_style_prefer_compound_assignment = true
 dotnet_style_prefer_conditional_expression_over_assignment = true
 dotnet_style_prefer_conditional_expression_over_return = true
@@ -115,6 +116,7 @@ csharp_prefer_braces = true
 csharp_prefer_simple_using_statement = true
 csharp_style_namespace_declarations = block_scoped
 csharp_style_prefer_method_group_conversion = true
+csharp_style_prefer_primary_constructors = true
 csharp_style_prefer_top_level_statements = true
 
 # 식 수준 기본 설정
@@ -145,12 +147,12 @@ csharp_style_allow_embedded_statements_on_same_line_experimental = true
 #### C# 서식 설정 규칙 ####
 
 # 새 줄 기본 설정
-csharp_new_line_before_catch = false
-csharp_new_line_before_else = false
-csharp_new_line_before_finally = false
-csharp_new_line_before_members_in_anonymous_types = false
-csharp_new_line_before_members_in_object_initializers = false
-csharp_new_line_before_open_brace = none
+csharp_new_line_before_catch = true
+csharp_new_line_before_else = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_open_brace = all
 csharp_new_line_between_query_expression_clauses = true
 
 # 들여쓰기 기본 설정
@@ -187,7 +189,7 @@ csharp_space_between_square_brackets = false
 
 # 기본 설정 래핑
 csharp_preserve_single_line_blocks = true
-csharp_preserve_single_line_statements = true
+csharp_preserve_single_line_statements = false
 
 #### 명명 스타일 ####
 
@@ -252,16 +254,16 @@ cpp_indent_preprocessor = leftmost_column
 cpp_indent_access_specifiers = false
 cpp_indent_namespace_contents = true
 cpp_indent_preserve_comments = false
-cpp_new_line_before_open_brace_namespace = same_line
-cpp_new_line_before_open_brace_type = same_line
-cpp_new_line_before_open_brace_function = same_line
-cpp_new_line_before_open_brace_block = same_line
-cpp_new_line_before_open_brace_lambda = same_line
+cpp_new_line_before_open_brace_namespace = new_line
+cpp_new_line_before_open_brace_type = new_line
+cpp_new_line_before_open_brace_function = new_line
+cpp_new_line_before_open_brace_block = new_line
+cpp_new_line_before_open_brace_lambda = new_line
 cpp_new_line_scope_braces_on_separate_lines = true
 cpp_new_line_close_brace_same_line_empty_type = false
 cpp_new_line_close_brace_same_line_empty_function = false
-cpp_new_line_before_catch = false
-cpp_new_line_before_else = false
+cpp_new_line_before_catch = true
+cpp_new_line_before_else = true
 cpp_new_line_before_while_in_do_while = false
 cpp_space_before_function_open_parenthesis = remove
 cpp_space_within_parameter_list_parentheses = false
@@ -273,7 +275,7 @@ cpp_space_within_cast_parentheses = false
 cpp_space_after_cast_close_parenthesis = false
 cpp_space_within_expression_parentheses = false
 cpp_space_before_block_open_brace = true
-cpp_space_between_empty_braces = false
+cpp_space_between_empty_braces = true
 cpp_space_before_initializer_list_open_brace = false
 cpp_space_within_initializer_list_braces = true
 cpp_space_preserve_in_initializer_list = false
@@ -296,4 +298,16 @@ cpp_space_around_binary_operator = insert
 cpp_space_around_assignment_operator = insert
 cpp_space_pointer_reference_alignment = left
 cpp_space_around_ternary_operator = insert
-cpp_wrap_preserve_blocks = never
+cpp_use_unreal_engine_macro_formatting = true
+cpp_wrap_preserve_blocks = all_one_line_scopes
+
+# Visual C++ 정리 설정
+
+cpp_include_cleanup_add_missing_error_tag_type = suggestion
+cpp_include_cleanup_remove_unused_error_tag_type = dimmed
+cpp_include_cleanup_sort_after_edits = false
+cpp_sort_includes_error_tag_type = none
+cpp_sort_includes_priority_case_sensitive = false
+cpp_sort_includes_priority_style = quoted
+cpp_includes_style = default
+cpp_includes_use_forward_slash = true
