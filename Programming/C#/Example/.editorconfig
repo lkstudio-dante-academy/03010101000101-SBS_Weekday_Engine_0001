@@ -71,7 +71,7 @@ dotnet_style_readonly_field = true
 dotnet_code_quality_unused_parameters = all
 
 # 비표시 오류(Suppression) 기본 설정
-dotnet_remove_unnecessary_suppression_exclusions = none
+dotnet_remove_unnecessary_suppression_exclusions = 0
 
 # 새 줄 기본 설정
 dotnet_style_allow_multiple_blank_lines_experimental = true
@@ -106,6 +106,7 @@ csharp_style_prefer_switch_expression = true
 csharp_style_conditional_delegate_call = true
 
 # 한정자 기본 설정
+csharp_prefer_static_anonymous_function = true
 csharp_prefer_static_local_function = true
 csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,required,volatile,async
 csharp_style_prefer_readonly_struct = true
@@ -260,8 +261,8 @@ cpp_new_line_before_open_brace_function = new_line
 cpp_new_line_before_open_brace_block = new_line
 cpp_new_line_before_open_brace_lambda = new_line
 cpp_new_line_scope_braces_on_separate_lines = true
-cpp_new_line_close_brace_same_line_empty_type = false
-cpp_new_line_close_brace_same_line_empty_function = false
+cpp_new_line_close_brace_same_line_empty_type = true
+cpp_new_line_close_brace_same_line_empty_function = true
 cpp_new_line_before_catch = true
 cpp_new_line_before_else = true
 cpp_new_line_before_while_in_do_while = false
@@ -305,9 +306,102 @@ cpp_wrap_preserve_blocks = all_one_line_scopes
 
 cpp_include_cleanup_add_missing_error_tag_type = suggestion
 cpp_include_cleanup_remove_unused_error_tag_type = dimmed
+cpp_include_cleanup_optimize_unused_error_tag_type = suggestion
 cpp_include_cleanup_sort_after_edits = false
 cpp_sort_includes_error_tag_type = none
 cpp_sort_includes_priority_case_sensitive = false
 cpp_sort_includes_priority_style = quoted
 cpp_includes_style = default
 cpp_includes_use_forward_slash = true
+
+[*.{cpp,h}]
+
+# Naming convention rules (note: currently need to be ordered from more to less specific)
+
+cpp_naming_rule.aactor_prefixed.symbols = aactor_class
+cpp_naming_rule.aactor_prefixed.style = aactor_style
+
+cpp_naming_rule.swidget_prefixed.symbols = swidget_class
+cpp_naming_rule.swidget_prefixed.style = swidget_style
+
+cpp_naming_rule.uobject_prefixed.symbols = uobject_class
+cpp_naming_rule.uobject_prefixed.style = uobject_style
+
+cpp_naming_rule.booleans_prefixed.symbols = boolean_vars
+cpp_naming_rule.booleans_prefixed.style = boolean_style
+
+cpp_naming_rule.structs_prefixed.symbols = structs
+cpp_naming_rule.structs_prefixed.style = unreal_engine_structs
+
+cpp_naming_rule.enums_prefixed.symbols = enums
+cpp_naming_rule.enums_prefixed.style = unreal_engine_enums
+
+cpp_naming_rule.templates_prefixed.symbols = templates
+cpp_naming_rule.templates_prefixed.style = unreal_engine_templates
+
+cpp_naming_rule.general_names.symbols = all_symbols
+cpp_naming_rule.general_names.style = unreal_engine_default
+
+# Naming convention symbols
+
+cpp_naming_symbols.aactor_class.applicable_kinds = class
+cpp_naming_symbols.aactor_class.applicable_type = AActor
+
+cpp_naming_symbols.swidget_class.applicable_kinds = class
+cpp_naming_symbols.swidget_class.applicable_type = SWidget
+
+cpp_naming_symbols.uobject_class.applicable_kinds = class
+cpp_naming_symbols.uobject_class.applicable_type = UObject
+
+cpp_naming_symbols.boolean_vars.applicable_kinds = local,parameter,field
+cpp_naming_symbols.boolean_vars.applicable_type = bool
+
+cpp_naming_symbols.enums.applicable_kinds = enum
+
+cpp_naming_symbols.templates.applicable_kinds = template_class
+
+cpp_naming_symbols.structs.applicable_kinds = struct
+
+cpp_naming_symbols.all_symbols.applicable_kinds = *
+
+# Naming convention styles
+
+cpp_naming_style.unreal_engine_default.capitalization = pascal_case
+cpp_naming_style.unreal_engine_default.required_prefix =
+cpp_naming_style.unreal_engine_default.required_suffix =
+cpp_naming_style.unreal_engine_default.word_separator =
+
+cpp_naming_style.unreal_engine_enums.capitalization = pascal_case
+cpp_naming_style.unreal_engine_enums.required_prefix = E
+cpp_naming_style.unreal_engine_enums.required_suffix =
+cpp_naming_style.unreal_engine_enums.word_separator =
+
+cpp_naming_style.unreal_engine_templates.capitalization = pascal_case
+cpp_naming_style.unreal_engine_templates.required_prefix = T
+cpp_naming_style.unreal_engine_templates.required_suffix =
+cpp_naming_style.unreal_engine_templates.word_separator =
+
+cpp_naming_style.unreal_engine_structs.capitalization = pascal_case
+cpp_naming_style.unreal_engine_structs.required_prefix = F
+cpp_naming_style.unreal_engine_structs.required_suffix =
+cpp_naming_style.unreal_engine_structs.word_separator =
+
+cpp_naming_style.uobject_style.capitalization = pascal_case
+cpp_naming_style.uobject_style.required_prefix = U
+cpp_naming_style.uobject_style.required_suffix =
+cpp_naming_style.uobject_style.word_separator =
+
+cpp_naming_style.aactor_style.capitalization = pascal_case
+cpp_naming_style.aactor_style.required_prefix = A
+cpp_naming_style.aactor_style.required_suffix =
+cpp_naming_style.aactor_style.word_separator =
+
+cpp_naming_style.swidget_style.capitalization = pascal_case
+cpp_naming_style.swidget_style.required_prefix = S
+cpp_naming_style.swidget_style.required_suffix =
+cpp_naming_style.swidget_style.word_separator =
+
+cpp_naming_style.boolean_style.capitalization = pascal_case
+cpp_naming_style.boolean_style.required_prefix = b
+cpp_naming_style.boolean_style.required_suffix =
+cpp_naming_style.boolean_style.word_separator =
