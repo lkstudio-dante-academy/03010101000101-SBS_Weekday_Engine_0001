@@ -92,7 +92,7 @@ public class CCameraController : CComponent
 	/** 비율 대상을 설정한다 */
 	private void SetupScalingTarget()
 	{
-		var stScale = Vector3.one * CAccess.GetResolutionScale(KDefine.G_DESIGN_SIZE);
+		var stScale = Vector3.one * Access.GetResolutionScale(KDefine.G_DESIGN_SIZE);
 		m_oScalingTarget.transform.localScale = stScale;
 	}
 	#endregion // 함수

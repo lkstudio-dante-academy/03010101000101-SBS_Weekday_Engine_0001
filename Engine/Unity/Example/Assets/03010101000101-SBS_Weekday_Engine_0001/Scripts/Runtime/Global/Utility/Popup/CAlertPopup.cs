@@ -112,8 +112,8 @@ public class CAlertPopup : CPopup
 		var stParams = CAlertPopup.MakeParams("알림",
 			a_oMsg, "확인", a_bIsEnableCancelBtn ? "취소" : string.Empty);
 
-		var oAlertPopup = CFactory.CreateCloneGameObj<CAlertPopup>("AlertPopup",
-			Resources.Load<GameObject>("Global/Prefabs/G_AlertPopup"), a_oParent,
+		var oAlertPopup = Factory.CreateCloneGameObj<CAlertPopup>("AlertPopup",
+			Resources.Load<GameObject>("Prefabs/Global/G_Prefab_AlertPopup"), a_oParent,
 			Vector3.zero, Vector3.one, Vector3.zero);
 
 		oAlertPopup.Init(stParams);

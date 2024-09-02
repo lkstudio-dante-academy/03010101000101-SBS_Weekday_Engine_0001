@@ -44,7 +44,7 @@ public abstract class CSceneManager : CComponent
 		// 테이블 로드가 필요 할 경우
 		if(!CSceneManager.IsLoadTables)
 		{
-			CStrTable.Inst.LoadStrTable("Global/Tables/StrTable");
+			CStrTable.Inst.LoadStrTable("Tables/Global/G_Table_Str");
 		}
 
 		/*
@@ -103,7 +103,7 @@ public abstract class CSceneManager : CComponent
 		base.Update();
 
 		// Esc 키를 눌렀을 경우
-		if(Input.GetKeyDown(KeyCode.Escape) && !this.SceneName.Equals(KDefine.G_SCENE_N_E00))
+		if(Input.GetKeyDown(KeyCode.Escape) && !this.SceneName.Equals(KDefine.G_N_SCENE_EXAMPLE_00))
 		{
 			var oAlertPopup = this.PopupUIs.GetComponentInChildren<CAlertPopup>();
 
@@ -148,7 +148,7 @@ public abstract class CSceneManager : CComponent
 		// 확인 버튼을 눌렀을 경우
 		if(a_bIsOK)
 		{
-			CSceneLoader.Inst.LoadScene(KDefine.G_SCENE_N_E00);
+			CSceneLoader.Inst.LoadScene(KDefine.G_N_SCENE_EXAMPLE_00);
 		}
 	}
 	#endregion // 함수

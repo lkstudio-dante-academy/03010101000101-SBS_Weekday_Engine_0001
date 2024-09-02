@@ -43,9 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\Example_01 %28클래스%29\CExample_01.cs" />
-    <Compile Include="Classes\Example_02 %28제네릭 및 정적 클래스%29\CExample_02.cs" />
-    <Compile Include="Classes\Example_03 %28델리게이트%29\CExample_03.cs" />
+    <Compile Include="03010101000101-SBS_Weekday_Engine_0001\E01\Example\Classes\Runtime\Example_01 %28클래스%29\CE01Example_01.cs" />
+    <Compile Include="03010101000101-SBS_Weekday_Engine_0001\E01\Example\Classes\Runtime\Example_02 %28제네릭, 정적 클래스%29\CE01Example_02.cs" />
+    <Compile Include="03010101000101-SBS_Weekday_Engine_0001\E01\Example\Classes\Runtime\Example_03 %28델리게이트%29\CE01Example_03.cs" />
+    <Compile Include="03010101000101-SBS_Weekday_Engine_0001\E01\Practice\Classes\Runtime\Practice_01\CP01Practice_01.cs" />
+    <Compile Include="03010101000101-SBS_Weekday_Engine_0001\E01\Practice\Classes\Runtime\Practice_02\CP01Practice_02.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

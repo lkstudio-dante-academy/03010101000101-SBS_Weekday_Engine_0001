@@ -24,9 +24,8 @@ public class CSoundManager : CSingleton<CSoundManager>
 	{
 		base.Awake();
 
-		m_oBGSound = CFactory.CreateCloneGameObj<CSound>("BGSound",
-			Resources.Load<GameObject>("Global/Prefabs/G_BGSound"), this.gameObject,
-			Vector3.zero, Vector3.one, Vector3.zero);
+		m_oBGSound = Factory.CreateCloneGameObj<CSound>("BGSound",
+			Resources.Load<GameObject>("Prefabs/Global/G_Prefab_BGM"), this.gameObject, Vector3.zero, Vector3.one, Vector3.zero);
 	}
 
 	/** 배경음 음소거 여부를 변경한다 */
@@ -97,9 +96,8 @@ public class CSoundManager : CSingleton<CSoundManager>
 			return null;
 		}
 
-		var oFXSounds = CFactory.CreateCloneGameObj<CSound>("FXSounds",
-			Resources.Load<GameObject>("Global/Prefabs/G_FXSound"), this.gameObject,
-			Vector3.zero, Vector3.one, Vector3.zero);
+		var oFXSounds = Factory.CreateCloneGameObj<CSound>("FXSounds",
+			Resources.Load<GameObject>("Prefabs/Global/G_Prefab_SFX"), this.gameObject, Vector3.zero, Vector3.one, Vector3.zero);
 
 		oSoundList.Add(oFXSounds);
 		return oFXSounds;

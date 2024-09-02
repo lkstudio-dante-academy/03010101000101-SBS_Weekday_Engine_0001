@@ -87,7 +87,7 @@ public class CScheduleManager : CSingleton<CScheduleManager>
 			var stParams = CTimer.MakeParams(a_nTimes,
 				a_fInterval, a_oCallback, a_fDelay);
 
-			var oTimer = CFactory.CreateGameObj<CTimer>("Timer",
+			var oTimer = Factory.CreateGameObj<CTimer>("Timer",
 				this.gameObject, Vector3.zero, Vector3.one, Vector3.zero);
 
 			oTimer.Init(stParams);
