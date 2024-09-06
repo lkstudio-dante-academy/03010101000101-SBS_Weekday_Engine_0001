@@ -40,7 +40,7 @@ using System.Threading.Tasks;
  */
 namespace Example.Classes.Example_02 {
 	/** Example 2 */
-	class CExample_02 {
+	class CE01Example_02 {
 #if E02_01
 		/*
 		 * 일반적으로 제네릭 메서드와 클래스는 모든 자료형에 동작하도록 명령문이 구성
