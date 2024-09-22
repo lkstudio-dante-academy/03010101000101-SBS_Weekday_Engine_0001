@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 
 /*
- * AssetPostprocessor 클래스는 유니티 에디터 상에서 특정 에셋들을 로드 될 때 발생하는
+ * AssetPostprocessor 클래스는 Unity 에디터 상에서 특정 에셋들을 로드 될 때 발생하는
  * 이벤트를 처리하는 역할을 수행한다. (즉, 해당 클래스를 활용하면 에셋이 추가 되는 과정에서
  * 특정 옵션을 자동으로 설정하도록 구문을 작성하는 것이 가능하다.)
  */

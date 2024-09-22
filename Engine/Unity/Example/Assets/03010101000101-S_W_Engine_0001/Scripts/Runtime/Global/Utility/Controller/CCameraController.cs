@@ -15,12 +15,12 @@ public class CCameraController : CComponent
 	 * 수행하는 것이 가능하다.)
 	 * 
 	 * SerializeField 란?
-	 * - 기본적으로 C# 스크립트에 작성 된 맴버 변수를 유니티 에디터 상에서 설정하기 위해서는
+	 * - 기본적으로 C# 스크립트에 작성 된 맴버 변수를 Unity 에디터 상에서 설정하기 위해서는
 	 * 해당 변수가 public 보호 수준 일 필요가 있다.
 	 * 
-	 * 하지만 public 보호 수준은 안전성을 떨어뜨리는 문제가 있기 때문에 유니티는 
+	 * 하지만 public 보호 수준은 안전성을 떨어뜨리는 문제가 있기 때문에 Unity 는 
 	 * SerializeField 애트리뷰트를 제공하며 해당 속성을 활용하면 private 보호 수준이라
-	 * 하더라도 유니티 에디터 상에서 해당 변수를 설정하는 것이 가능하다.
+	 * 하더라도 Unity 에디터 상에서 해당 변수를 설정하는 것이 가능하다.
 	 */
 	[SerializeField] private bool m_bIsPerspective = true;
 	[SerializeField] private GameObject m_oScalingTarget = null;
@@ -34,7 +34,7 @@ public class CCameraController : CComponent
 
 		/*
 		 * GetComponent 메서드는 특정 게임 객체가 지니고 있는 컴포넌트를 가져오는 역할을
-		 * 수행한다. (즉, 유니티는 여러 컴포넌트를 조합해서 특정 역할을 수행하기 때문에
+		 * 수행한다. (즉, Unity 는 여러 컴포넌트를 조합해서 특정 역할을 수행하기 때문에
 		 * 주어진 명령문을 실행하는 과정에서 다른 컴포넌트를 참조 할 필요가 있을 경우 해당
 		 * 메서드를 활용하면 된다.)
 		 * 

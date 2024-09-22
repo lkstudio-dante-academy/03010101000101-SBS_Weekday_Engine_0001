@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /*
- * 유니티 사운드 재생 방법
+ * Unity 에서 사운드 재생 방법
  * - AudioSource.PlayClipAtPoint 메서드 호출
  * - Audio Source 컴포넌트에 Audio Clip 을 설정 후 Play 메서드 호출
  * 
  * PlayClipAtPoint vs Audio Clip
  * - PlayClipAtPoint 메서드를 사용하면 별도의 게임 객체를 생성하지 않고 사운드를 재생하는 것이
- * 가능하다. 단, 유니티에서 사운드를 재생하기 위해서는 반드시 Audio Source 컴포넌트가 필요하기
+ * 가능하다. 단, Unity 에서 사운드를 재생하기 위해서는 반드시 Audio Source 컴포넌트가 필요하기
  * 때문에 PlayClipAtPoint 메서드를 호출하는 순간 자동으로 Audio Source 컴포넌트를 포함하고 있는
  * 게임 객체가 생성되고 사라지는 단점이 존재한다. (즉, 사운드르 빈번하게 재생하면 많은 게임 객체가
  * 생성되고 제거 되기 때문에 프로그램의 성능이 저하된다는 것을 알 수 있다.)

@@ -33,7 +33,7 @@ public class CStrTable : CSingleton<CStrTable>
 	public void LoadStrTable(string a_oFilePath)
 	{
 		/*
-		 * 유니티에서 Resources 폴더로부터 텍스트 파일을 읽어들이고 싶다면 해당 에셋의 자료형을
+		 * Unity 에서 Resources 폴더로부터 텍스트 파일을 읽어들이고 싶다면 해당 에셋의 자료형을
 		 * TextAsset 으로 지정하면 된다. (즉, TextAsset 문자열 기반으로 된 에셋을 제어 할 수 있는
 		 * 자료형이라는 것을 알 수 있다.
 		 */
