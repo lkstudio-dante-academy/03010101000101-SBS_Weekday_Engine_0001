@@ -406,14 +406,14 @@ FodyWeavers.xsd
 **/Source/*-*/
 !**/Source/00000300000001-[Cc]ommon/
 !**/Source/00000300000001-[Pp]ackage/
-!**/Source/00000301000201-[Uu]nity/
+!**/Source/00000303000201-[Uu]nity/
 !**/Source/00000301000301-[Uu]nreal/
 
 **/Packages/*-*/
 **/NonUnityBuild/
 !**/Packages/00000300000001-[Cc]ommon/
 !**/Packages/00000300000001-[Pp]ackage/
-!**/Packages/00000301000201-[Uu]nity/
+!**/Packages/00000303000201-[Uu]nity/
 !**/Packages/00000301000301-[Uu]nreal/
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio
