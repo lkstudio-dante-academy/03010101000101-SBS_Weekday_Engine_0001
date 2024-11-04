@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Example._03010101000101_S_W_Engine_0001.E01.Practice.Classes.Runtime.Practice_02 {
+namespace Example._03020103000101_SBS_Weekday_Engine_0001.E01.Practice.Classes.Runtime.Practice_02 {
 	/** Practice 2 */
 	class CP01Practice_02 {
 		/** 초기화 */

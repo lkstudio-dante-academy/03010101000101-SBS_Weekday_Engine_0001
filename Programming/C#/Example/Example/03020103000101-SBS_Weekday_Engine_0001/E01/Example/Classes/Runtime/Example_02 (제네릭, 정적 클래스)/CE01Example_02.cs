@@ -113,7 +113,7 @@ public static partial class CExtension
 	}
 }
 
-namespace Example._03010101000101_S_W_Engine_0001.E01.Example.Classes.Runtime.Example_02
+namespace Example._03020103000101_SBS_Weekday_Engine_0001.E01.Example.Classes.Runtime.Example_02
 {
 	/** Example 2 */
 	class CE01Example_02

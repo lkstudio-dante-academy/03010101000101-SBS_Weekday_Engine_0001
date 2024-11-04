@@ -16,7 +16,7 @@ public static partial class KEditor_Define
 	public const string G_PATTERN_NAME_SCENE = "t:Example t:Scene";
 
 	// 경로
-	public const string G_P_DIR_SEARCH_SCENE = "Assets/03010101000101-S_W_Engine_0001/E01/Example/Scenes";
+	public const string G_P_DIR_SEARCH_SCENE = "Assets/03020103000101-SBS_Weekday_Engine_0001/E01/Example/Scenes";
 	#endregion // 컴파일 상수
 
 	#region 런타임 상수

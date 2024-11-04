@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Example._03010101000101_S_W_Engine_0001.E01.Practice.Classes.Runtime.Practice_01 {
+namespace Example._03020103000101_SBS_Weekday_Engine_0001.E01.Practice.Classes.Runtime.Practice_01 {
 	/** Practice 1 */
 	class CP01Practice_01 {
 #if P01_01

@@ -70,7 +70,7 @@ using System.Threading.Tasks;
  *		}
  * }
  */
-namespace Example._03010101000101_S_W_Engine_0001.E01.Example.Classes.Runtime.Example_01
+namespace Example._03020103000101_SBS_Weekday_Engine_0001.E01.Example.Classes.Runtime.Example_01
 {
 	class CE01Example_01
 	{
